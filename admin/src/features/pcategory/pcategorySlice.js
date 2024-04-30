@@ -15,6 +15,7 @@ export const createCategory = createAsyncThunk(
   "productCategory/create-category",
   async (categoryData, thunkAPI) => {
     try {
+      console.log({ categoryData })
       return await pCategoryService.createCategory(categoryData);
     } catch (error) {
       return thunkAPI.rejectWithValue(error);

@@ -8,8 +8,9 @@ const getProductCategories = async () => {
   return response.data;
 };
 const createCategory = async (category) => {
+  console.log(category)
   const response = await axios.post(`${base_url}category/`, category, config);
-
+  console.log({ response })
   return response.data;
 };
 
