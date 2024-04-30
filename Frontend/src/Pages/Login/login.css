@@ -1,0 +1,111 @@
+.auth {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    margin: 40px 0px 80px 0px;
+}
+
+.login-section {
+    width: 90%;
+    height: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.loginImg {
+    width: 50%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 430px;
+    border-radius: 4px 0px 0px 4px;
+}
+
+.loginform {
+    width: 50%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 430px;
+}
+
+.loginImg {
+    background-color: #CBE4E8;
+}
+
+.loginImg img {
+    width: 371px;
+}
+
+.loginform form {
+    width: 65%;
+    height: 100%;
+}
+
+.loginform .hedding {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 12px 0px;
+}
+
+.loginform span {
+    font-size: 14px;
+}
+
+.loginform .form_group {
+    width: 100%;
+}
+
+.loginform .form_group input {
+    width: 100%;
+    height: 32px;
+    margin: 14px 0px;
+    outline: none;
+    border-radius: 0px;
+    border-bottom: 2px solid gray;
+}
+.loginform .form_group .login-btn {
+    width: 100%;
+    height: 32px;
+    margin: 8px 0px;
+    outline: none;
+    border-radius: 0px;
+    background-color: #DB4444;
+    color: white;
+}
+.login-btn-text{
+    width: 30%;
+     height: 32px;
+        margin: 8px 4px;
+        outline: none;
+        border-radius: 0px;
+        background-color: #DB4444;
+        color: white;
+}
+.login-Forgot{
+ min-width: 30%;
+ max-width: auto;
+     height: 32px;
+        margin: 8px 4px;
+        outline: none;
+        border-radius: 0px;
+        background-color:white;
+        color: #DB4444;
+}
+.loginform .form_group .login-btn-goole {
+    width: 100%;
+    height: 32px;
+    margin: 8px 0px;
+    outline: none;
+    border-radius: 0px;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    border:1px solid gray
+}
+.link-btn{
+    color:rgb(72, 72, 255);
+}

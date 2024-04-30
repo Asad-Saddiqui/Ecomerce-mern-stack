@@ -1,0 +1,148 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+
+  overflow-x: hidden;
+}
+
+.open{
+  display: none;
+}
+
+@media screen and (min-width: 768px){
+  .open{
+    display: block;
+  }
+}
+
+
+.login{
+  height: 70vh;
+  align-items: center;
+  gap: 4%;
+}
+.login .row{
+  align-items: center;
+}
+.login .img{
+  height: 50vh;
+  background-color: #CBE4E8;
+}
+.login input{
+  margin: 10px 0px;
+  width: 80%;
+  border: none;
+  border-bottom: 1px solid black;
+}
+.login input:focus{
+  border-bottom: 1px solid black;
+  outline: none;
+}
+.login p{
+  padding: 10px 0px;
+}
+.login a{
+  text-decoration: none;
+  color: #DB4444;
+}
+.login a:hover{
+  color: black;
+  border-bottom: 1px solid #000000;
+}
+.login button{
+  padding: 8px 30px;
+  background-color: #DB4444;
+  color: white;
+}
+.login button:hover{
+  background-color: #000000;
+  color: rgb(255, 255, 255);
+}
+
+.custom-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+
+
+.signup{
+  height: 80vh;
+  align-items: center;
+  gap: 4%;
+}
+.signup .row{
+  align-items: center;
+}
+.signup .img{
+  height: 70vh;
+  background-color: #CBE4E8;
+}
+.signup h2{
+  margin: 0px;
+}
+.signup input{
+  margin: 10px 0px;
+  width: 80%;
+  border: none;
+  border-bottom: 1px solid black;
+}
+.signup input:focus{
+  border-bottom: 1px solid black;
+  outline: none;
+}
+.signup p{
+  padding: 5px 0px;
+}
+.signup a{
+  text-decoration: none;
+}
+.signup a:hover{
+  color: black;
+  border-bottom: 1px solid #000000;
+  cursor: pointer;
+}
+.signup button{
+  padding: 8px 30px;
+  background-color: #DB4444;
+  color: white;
+  width: 80%;
+  margin: 8px 0px;
+  border: none;
+}
+.signup button:hover{
+  background-color: #000000;
+  color: rgb(255, 255, 255);
+}
+.signup .btn{
+  background-color: transparent;
+  color: black;
+  border: 1px solid black;
+}
+
+.imgCom{
+  background-image: url("https://source.unsplash.com/random");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover; /* Ensure the image covers the entire div */
+  width: 100%;
+  height: 100vh; /* Set height to viewport height */
+
+  overflow: hidden; /* Hide overflow content */
+}
+
+
+.line::after {
+  content: '';
+  display: block;
+  width: 100%; /* Adjust the width as needed */
+  height: 2px; /* Adjust the height as needed */
+  background-color: black; /* Adjust the color as needed */
+}
+
+
