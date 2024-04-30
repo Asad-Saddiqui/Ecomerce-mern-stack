@@ -11,14 +11,14 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link } from 'react-router-dom';
 const Signup = () => {
-    const [firstname, setFirstname] = useState('');
-    const [email, setEmail] = useState('');
+    const [Firstname, setFirstname] = useState('');
+    const [Email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const dispatch = useDispatch();
     const { isLoading, error, user } = useSelector(state => state.signup);
     const handleSubmit = (e) => {
         e.preventDefault();
-        dispatch(signupUser({ firstname, email, password }));
+        dispatch(signupUser({ Firstname, Email, password }));
         if (error) {
             toast.error(error);
         } else {
@@ -44,10 +44,10 @@ const Signup = () => {
                             <p class="hedding">Create an account</p>
                             <span>Enter your details below</span>
                             <div class="form_group">
-                                <input type="text" placeholder='Name' value={firstname} onChange={(e) => setFirstname(e.target.value)} />
+                                <input type="text" placeholder='Name' value={Firstname} onChange={(e) => setFirstname(e.target.value)} />
                             </div>
                             <div class="form_group">
-                                <input type="email" placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value)} />
+                                <input type="email" placeholder='Email' value={Email} onChange={(e) => setEmail(e.target.value)} />
                             </div>
                             <div class="form_group">
                                 <input type="password" placeholder='Password' value={password} onChange={(e) => setPassword(e.target.value)} />

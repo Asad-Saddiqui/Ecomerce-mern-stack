@@ -17,31 +17,31 @@ const bcrypt = require("bcrypt");
 // Create a User ----------------------------------------------
 
 const createUser = asyncHandler(async (req, res) => {
- 
-  const email = req.body.email;
-  const firstname = req.body.firstname;
-  const password = req.body.password;
+  console.log("calling....")
+  try {
+    const { Email, Firstname, password } = req.body;
 
-  /**
-   * TODO:With the help of email find the user exists or not
-   */
-  const findUser = await User.findOne({ email: email });
+    const salt = await bcrypt.genSaltSync(10);
+    const hash = await bcrypt.hash(password, salt);
+    // Check if the user already exists
+    const findUser = await User.findOne({ email: Email });
 
-  if (!findUser) {
-    /**
-     * TODO:if user not found user create a new user
-     */
-    const newUser = await User.create({ firstname, email, password });
-    newUser.save();
-    newUser.password = null;
-    res.json(newUser);
-  } else {
-    /**
-     * TODO:if user found then thow an error: User already exists
-     */
-    throw new Error("User Already Exists");
+    if (!findUser) {
+      // Create a new user if not found
+      const newUser = await User.create({ firstname: Firstname, email: Email, password: hash });
+      // No need to call newUser.save() since User.create() already saves the document
+      newUser.password = null; // Clear password for security reasons
+      res.json(newUser);
+      console.log("saved");
+    } else {
+      // Throw an error if the user already exists
+      throw new Error("User Already Exists");
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
+
 
 // Login a user
 const loginUserCtrl = asyncHandler(async (req, res) => {
