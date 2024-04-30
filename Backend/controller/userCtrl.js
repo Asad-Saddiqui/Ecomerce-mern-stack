@@ -18,8 +18,8 @@ const bcrypt = require("bcrypt");
 
 const createUser = asyncHandler(async (req, res) => {
  
-  const email = req.body.Email;
-  const firstname = req.body.Firstname;
+  const email = req.body.email;
+  const firstname = req.body.firstname;
   const password = req.body.password;
 
   /**
