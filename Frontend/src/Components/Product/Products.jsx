@@ -10,51 +10,14 @@ import {
   faTv,
   faWalkieTalkie,
 } from "@fortawesome/free-solid-svg-icons";
+import {
+  faStar,
+} from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import "./products.css";
+
 
 const Products = ({ products }) => {
-
-  const categoryData = [
-    {
-      icon: faMobile,
-      text: "Phone",
-      price: "200$",
-      removedPrice: "$1150",
-      reviews: " (900) ",
-    },
-    { icon: faTv, text: "TV" },
-    {
-      icon: faSwatchbook,
-      text: "Swatchbook",
-      price: "200$",
-      removedPrice: "$1150",
-      reviews: " (900) ",
-    },
-    {
-      icon: faWalkieTalkie,
-      text: "Walkie Talkie",
-      price: "200$",
-      removedPrice: "$1150",
-      reviews: " (900) ",
-    },
-    {
-      icon: faWalkieTalkie,
-      text: "Walkie Talkie",
-      price: "200$",
-      removedPrice: "$1150",
-      reviews: " (900) ",
-    },
-    {
-      icon: faWalkieTalkie,
-      text: "Walkie Talkie",
-      price: "200$",
-      removedPrice: "$1150",
-      reviews: " (900) ",
-    },
-    { icon: faWalkieTalkie, text: "Walkie Talkie" },
-    { icon: faWalkieTalkie, text: "Walkie Talkie" },
-    { icon: faWalkieTalkie, text: "Walkie Talkie" },
-  ];
 
   const containerRef = useRef(null);
 
@@ -91,7 +54,10 @@ const Products = ({ products }) => {
     <div className="px-10 mt-20">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-5">
         <div className="">
-          <div className="bg-red-600 w-5 h-5"></div>
+          <div style={{ display: "flex"}}>
+            <div className="bg-red-600 w-4 h-7"></div>
+            <span style={{color:"red",fontSize:'18px',fontWeight:"700",marginLeft:"10px"}}>Today's</span>
+          </div>
           <h1 className="text-black font-semibold text-3xl md:text-4xl overflow-y-hidden">
             Flash Sales
           </h1>
@@ -124,36 +90,113 @@ const Products = ({ products }) => {
         className="mt-5 flex justify-start gap-14 overflow-x-auto custom-scrollbar"
         ref={containerRef}
       >
-        {products.length > 0 && products.map((category, index) => (
+        {products.length > 0 && products.map((product, index) => (
           <>
             <div
-              key={category._id}
-              className=" bg-gray-200 relative flex flex-col ml-8 justify-center items-center min-w-60 min-h-60 gap-4 border-black border-[1px] px-10 py-5 rounded-xl"
+              key={index}
+              className="cards_"
             >
-              <div className=" opacity-0 bg-transparent z-10 w-full h-full absolute hover:opacity-100 duration-500 ">
-                <div className="text-white absolute bottom-0  text-center font-bold text-sm py-3 bg-black w-full cursor-pointer">
-                  Add to Cart
-                  <Link to={"/product/" + category._id}>{category.title}</Link>
+              <div className="card_content">
+                <h1 className="percent">-40%</h1>
+                <div className="icons">
+                  <FontAwesomeIcon
+                    icon={faHeart}
+                    className="icon1"
+                  />
+                  <FontAwesomeIcon
+                    icon={faEye}
+                    className="icon1"
+                  />
+                </div>
+                <div className="img_">
+                  <img
+                    src={product.images.length > 0 ? "http://localhost:5000/public/" + product.images[0].url : "klsd"}
+                    alt=""
+                    className="w-40 h-40"
+                  />
+                </div>
+                <button className="btnadtocart">Add to cart</button>
+              </div>
+
+
+
+              <h3 className="text-black font-medium text-lg">
+                <Link to={"/product/" + product._id}> {product.title}</Link>
+              </h3>
+
+
+              <div className="flex items-center gap-2">
+                <p className="text-red-500 text-base">{product.price}</p>
+                {product.price && (
+                  <p class="opacity-50 text-base line-through">
+                    {product.price}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 text-sm">
+                {[...Array(5)].map((_, i) => (
+                  <FontAwesomeIcon
+                    key={i}
+                    icon={faStar}
+                    className={i < 4 ? "text-yellow-400" : "text-gray-400"}
+                  />
+                ))}
+                <span>{product.reviews}</span>
+              </div>
+            </div>
+            {/* <div
+              key={index}
+              className="bg-gray-100 rounded-xl flex flex-col justify-between p-5 border min-w-[200px] relative"
+              style={{ minWidth: "200px", maxWidth: "250px" }}
+            >
+              <div className="flex justify-between ">
+                <h1 className="bg-red-600 text-white rounded px-2 py-1 mb-4 font-semibold">-40%</h1>
+                <div className="flex gap-2 absolute right-6 top-20 flex-col">
+                  <FontAwesomeIcon
+                    icon={faHeart}
+                    className="text-black bg-slate-50 rounded-full p-2 shadow-md"
+                  />
+                  <FontAwesomeIcon
+                    icon={faEye}
+                    className="text-black bg-slate-50 rounded-full p-2 shadow-md"
+                  />
                 </div>
               </div>
-              <h1 className=" text-white absolute top-2 left-2 px-1 py-1  bg-red-600 rounded">
-                -40%
-              </h1>
-              <h1 className="flex flex-col gap-2 absolute top-2 right-2">
-                {" "}
-                <FontAwesomeIcon
-                  className="text-black text-2xl bg-slate-50 rounded-full p-2 shadow-md "
-                  icon={faHeart}
+
+              <div className="w-full flex justify-center">
+                <img
+                  src={product.images.length > 0 ? "http://localhost:5000/public/" + product.images[0].url : "klsd"}
+                  alt=""
+                  className="w-40 h-40"
                 />
-                <FontAwesomeIcon
-                  className="text-black text-2xl bg-slate-50 rounded-full p-2 shadow-md"
-                  icon={faEye}
-                />
-              </h1>
-              {/* <FontAwesomeIcon className="w-10 h-10" icon={category.icon} /> */}
-              <h1 className="font-semibold"><Link to={"/product/" + category._id }>{category.title}</Link></h1>
-          
-            </div>
+              </div>
+
+              <h3 className="text-black font-medium text-lg">
+                <Link to={"/product/" + product._id}> {product.title}</Link>
+              </h3>
+
+
+              <div className="flex items-center gap-2">
+                <p className="text-red-500 text-base">{product.price}</p>
+                {product.price && (
+                  <p class="opacity-50 text-base line-through">
+                    {product.price}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2 text-sm">
+                {[...Array(5)].map((_, i) => (
+                  <FontAwesomeIcon
+                    key={i}
+                    icon={faStar}
+                    className={i < 4 ? "text-yellow-400" : "text-gray-400"}
+                  />
+                ))}
+                <span>{product.reviews}</span>
+              </div>
+            </div> */}
           </>
         ))}
       </div>

@@ -26,23 +26,35 @@ const Home = () => {
     dispatch(getcategory());
   }, []);
   console.log({ category })
-  console.log({ Product: data })
+  console.log(data)
   console.log({ brand })
+  function isToday(dateString) {
+    const createdAtDate = new Date(dateString);
+    const today = new Date();
+
+    return (
+      createdAtDate.getDate() === today.getDate() &&
+      createdAtDate.getMonth() === today.getMonth() &&
+      createdAtDate.getFullYear() === today.getFullYear()
+    ) ? 'yes' : 'no';
+  }
+  let todayProduct = data ? data.length > 0 ? data.map((item) => isToday(item.createdAt) && item) : [] : "";
+  console.log({ todayProduct })
   return (
     <div>
       <div>
         <Top />
         <Navbar />
-        <TopSec category={category} />
+        <TopSec category={category} products={todayProduct} />
       </div>
       <div>
         {data &&
           <Products products={data} />
         }
       </div>
+      <Categories />
       {data && <BestSellingProducts products={data} />}
       <ImageComp />
-      <Categories />
       <ImagesSec />
       <Feature />
       <Footer />

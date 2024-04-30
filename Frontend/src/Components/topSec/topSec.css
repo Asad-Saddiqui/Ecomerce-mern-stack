@@ -1,15 +1,56 @@
-.main{
+.main {
     display: flex;
 }
 
-@media screen and (max-width: 768px){
-    .left{
+.content {
+    width: 100%;
+    background-color: black;
+    height: 56vh;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.item-section{
+    width: 90%;
+    height: 100%;
+    display: flex;
+        justify-content: space-around;
+        align-items: center;
+}
+.item-section div{
+    max-width: 50%;
+}
+.item-section div h3{
+color:white;
+font-family:sans-serif;
+font-weight: 700;
+font-size: 40px;
+}
+.shopbtn{
+    border: 0px;
+        border-bottom: 4px solid white;
+        padding: 3px 0px;
+        color: white;
+        cursor: pointer;
+        font-size: 20px;
+        margin-top: 30px;
+}
+.item-section .imagesection{
+    width: 40%;
+}
+
+.content img {
+    height: 200px;
+}
+
+@media screen and (max-width: 768px) {
+    .left {
 
         flex: 1;
     }
-    
-    .right{
-    
+
+    .right {
+
         flex: 4;
-    } 
+    }
 }

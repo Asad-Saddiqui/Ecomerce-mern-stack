@@ -45,7 +45,7 @@ const Categories = () => {
   return (
     <div className="px-10 mt-20">
       <div className="flex justify-start items-center gap-9">
-        <div className="bg-red-600 w-5 h-5 rounded-full "></div>
+        <div className="bg-red-600 w-4 h-6  "></div>
         <h1 className="text-red-600 font-semibold">Categories</h1>
       </div>
       <div className="flex justify-between items-center">

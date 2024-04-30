@@ -10,16 +10,17 @@ import { getproductbyid } from '../../store/actions/authActions';
 import { useDispatch, useSelector } from 'react-redux';
 const SingleProduct = () => {
   const { id } = useParams();
-  const basePrice = 192;
+
   const dispatch = useDispatch()
   const [quantity, setQuantity] = useState(1);
-  const [totalPrice, setTotalPrice] = useState(basePrice);
   const [selectedSize, setSelectedSize] = useState('M');
   const { isLoading, error, Sdata } = useSelector(state => state.singleProduct);
-
+  const basePrice = Sdata ? Sdata.price : 0;
+  const [totalPrice, setTotalPrice] = useState(basePrice);
   useEffect(() => {
     dispatch(getproductbyid(id))
   }, [id])
+
   const increaseQuantity = () => {
     const newQuantity = quantity + 1;
     setQuantity(newQuantity);
@@ -40,7 +41,6 @@ const SingleProduct = () => {
     { _id: 3, src: "https://via.placeholder.com/112", alt: "Thumbnail 2" },
     { _: 4, src: "https://via.placeholder.com/134", alt: "Thumbnail 3" },
   ];
-  console.log({ Sdata })
   let img = Sdata ? Sdata.images[0] : null;
 
   const [mainImage, setMainImage] = useState(imageSources[0]);
@@ -95,7 +95,7 @@ const SingleProduct = () => {
           {/* Product details */}
           <div className="flex flex-col space-y-4 md:flex-1">
             {/* Product Name */}
-            <h1 className="text-3xl font-semibold">Black Leather Shoes</h1>
+            <h1 className="text-3xl font-semibold">{Sdata && Sdata.title}</h1>
 
             {/* Star Ratings */}
             <div className="flex items-center">
@@ -110,7 +110,7 @@ const SingleProduct = () => {
             </div>
 
             {/* Base Price */}
-            <p className="text-2xl font-bold">${basePrice}</p>
+            <p className="text-2xl font-bold">${Sdata && Sdata.price}</p>
 
             {/* Total Price */}
             <p className="text-xl font-semibold">Total: ${totalPrice}</p>
@@ -153,8 +153,8 @@ const SingleProduct = () => {
             </button>
 
             {/* Description */}
-            <p className="text-sm text-gray-600">
-              PlayStation 5 Controller Skin: High-quality vinyl with air channel adhesive for easy, bubble-free install, and mess-free removal.
+            <p className="text-sm text-gray-600" dangerouslySetInnerHTML={{ __html: Sdata ? Sdata.description : "" }}>
+
             </p>
 
             {/* Additional Information */}

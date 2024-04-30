@@ -10,65 +10,6 @@ import {
 import { Link } from "react-router-dom";
 
 const BestSellingProducts = ({ products }) => {
-  const categoryData = [
-    {
-      iconSrc: "https://source.unsplash.com/random",
-      productName: "Phone",
-      price: "$200",
-      removedPrice: "$1150",
-      reviews: "(900)",
-    },
-    {
-      iconSrc: "https://source.unsplash.com/random?nature",
-      productName: "TV",
-      price: "$960",
-      removedPrice: "$1160",
-      reviews: "(1200)",
-    },
-    {
-      iconSrc: "https://source.unsplash.com/random?city",
-      productName: "Swatchbook",
-      price: "$200",
-      removedPrice: "$1150",
-      reviews: "(600)",
-    },
-    {
-      iconSrc: "https://source.unsplash.com/random?technology",
-      productName: "Walkie Talkie",
-      price: "$200",
-      removedPrice: "$1150",
-      reviews: "(750)",
-    },
-    {
-      iconSrc: "https://source.unsplash.com/random?abstract",
-      productName: "Walkie Talkie",
-      price: "$200",
-      removedPrice: "$1150",
-      reviews: "(750)",
-    },
-    {
-      iconSrc: "https://via.placeholder.com/140x176",
-      productName: "Walkie Talkie",
-      price: "$200",
-      removedPrice: "$1150",
-      reviews: "(750)",
-    },
-    {
-      iconSrc: "https://via.placeholder.com/140x176",
-      productName: "Walkie Talkie",
-      price: "$200",
-      removedPrice: "$1150",
-      reviews: "(750)",
-    },
-    {
-      iconSrc: "https://via.placeholder.com/140x176",
-      productName: "Walkie Talkie",
-      price: "$200",
-      removedPrice: "$1150",
-      reviews: "(750)",
-    },
-    // Add more products as needed
-  ];
 
   const containerRef = useRef(null);
 
