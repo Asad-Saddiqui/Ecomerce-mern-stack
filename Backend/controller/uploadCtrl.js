@@ -3,17 +3,11 @@ const asyncHandler = require("express-async-handler");
 
 const uploadImages = asyncHandler(async (req, res) => {
   try {
-    console.log("upload Images");
-    console.log(req.files);
     const urls = [];
     const files = req.files;
     for (const file of files) {
       const { path } = file;
-      
-      // const newpath = await uploader(path);
-      // console.log(newpath);
       urls.push(file.filename);
-      // fs.unlinkSync(path);
     }
     const images = urls.map((file) => {
       return file;

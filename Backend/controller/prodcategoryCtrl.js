@@ -4,10 +4,33 @@ const validateMongoDbId = require("../utils/validateMongodbId");
 
 const createCategory = asyncHandler(async (req, res) => {
   try {
-    const newCategory = await Category.create(req.body);
-    res.json(newCategory);
+    // Extract form data from request body
+    const { title } = req.body;
+
+    // Get file details from multer
+    const file = req.file;
+
+    // Check if file was uploaded
+    if (!file) {
+      throw new Error("Please  Upload  PNG Image");
+
+    }
+    if (!title) {
+      throw new Error("Please  Enter Title");
+    }
+
+    // Create a new category object
+    const category = new Category({
+      title: title,
+      image: file.filename // Save the filename to the database
+    });
+    // Save the category to the database
+    await category.save();
+    // Return success response
+    res.json(category);
   } catch (error) {
     throw new Error(error);
+
   }
 });
 const updateCategory = asyncHandler(async (req, res) => {
