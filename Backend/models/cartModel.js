@@ -9,12 +9,21 @@ var cartSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "Product",
         },
+
         count: Number,
-        color: String,
+        size: [],
+        color: [{
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Color",
+        }],
         price: Number,
       },
     ],
     cartTotal: Number,
+    confirm: {
+      type: Boolean,
+      default: false
+    },
     totalAfterDiscount: Number,
     orderby: {
       type: mongoose.Schema.Types.ObjectId,

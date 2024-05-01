@@ -45,10 +45,12 @@ const createUser = asyncHandler(async (req, res) => {
 
 // Login a user
 const loginUserCtrl = asyncHandler(async (req, res) => {
+  console.log(req.body)
   const email = req.body.Email;
   const password = req.body.password;
   // check if user exists or not
   const findUser = await User.findOne({ email });
+  console.log(findUser)
   if (findUser && (await bcrypt.compare(password, findUser.password))) {
     const updateuser = await User.findByIdAndUpdate(
       findUser.id,
@@ -344,40 +346,72 @@ const getWishlist = asyncHandler(async (req, res) => {
 });
 
 const userCart = asyncHandler(async (req, res) => {
-  const { cart } = req.body;
   const { _id } = req.user;
   validateMongoDbId(_id);
+
   try {
-    let products = [];
+    const isValid = Array.isArray(req.body) && req.body.length > 0 ?
+      req.body.every(item => (
+        item.product &&
+        item.count &&
+        item.size &&
+        item.price &&
+        item.color
+      )) : false;
+
+    if (!isValid) {
+      return res.status(400).json({ error: "Please Provide Valid Data" });
+    }
+
+    const cart = req.body;
+    const carts = [];
     const user = await User.findById(_id);
-    // check if user already have product in cart
-    const alreadyExistCart = await Cart.findOne({ orderby: user._id });
-    if (alreadyExistCart) {
-      alreadyExistCart.remove();
+
+    for (const cartItem of cart) {
+      const existingCart = await Cart.findOne({ orderby: user._id, confirm: false, 'products.product': cartItem.product });
+
+      if (existingCart) {
+        const updatedProducts = {
+          product: existingCart.products[0].product,
+          count: existingCart.products[0].count + cartItem.count,
+          size: [...existingCart.products[0].size, cartItem.size],
+          color: [...existingCart.products[0].color, cartItem.color],
+          price: existingCart.products[0].price,
+        };
+
+        const existCartUpdate = {
+          products: updatedProducts,
+          cartTotal: updatedProducts.count * updatedProducts.price
+        };
+
+        const updatedCart = await Cart.findOneAndUpdate({ orderby: user._id, confirm: false, 'products.product': cartItem.product }, existCartUpdate, { new: true });
+        carts.push(updatedCart);
+      } else {
+        const newProducts = {
+          product: cartItem.product,
+          count: cartItem.count,
+          size: [cartItem.size],
+          color: [cartItem.color],
+          price: cartItem.price,
+        };
+
+        const newCart = await new Cart({
+          products: newProducts,
+          cartTotal: newProducts.count * newProducts.price,
+          orderby: user?._id,
+        }).save();
+        carts.push(newCart);
+      }
     }
-    for (let i = 0; i < cart.length; i++) {
-      let object = {};
-      object.product = cart[i]._id;
-      object.count = cart[i].count;
-      object.color = cart[i].color;
-      let getPrice = await Product.findById(cart[i]._id).select("price").exec();
-      object.price = getPrice.price;
-      products.push(object);
-    }
-    let cartTotal = 0;
-    for (let i = 0; i < products.length; i++) {
-      cartTotal = cartTotal + products[i].price * products[i].count;
-    }
-    let newCart = await new Cart({
-      products,
-      cartTotal,
-      orderby: user?._id,
-    }).save();
-    res.json(newCart);
+
+    res.json(carts);
+    console.log(carts);
   } catch (error) {
-    throw new Error(error);
+    console.error("Error processing user cart:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
