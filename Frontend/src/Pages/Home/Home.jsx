@@ -25,9 +25,9 @@ const Home = () => {
     dispatch(getbrand());
     dispatch(getcategory());
   }, []);
-  console.log({ category })
+  console.log("category==", category)
   console.log(data)
-  console.log({ brand })
+  console.log(brand)
   function isToday(dateString) {
     const createdAtDate = new Date(dateString);
     const today = new Date();
@@ -52,7 +52,7 @@ const Home = () => {
           <Products products={data} />
         }
       </div>
-      <Categories />
+      <Categories category={category.category} />
       {data && <BestSellingProducts products={data} />}
       <ImageComp />
       <ImagesSec />

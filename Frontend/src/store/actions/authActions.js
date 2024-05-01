@@ -5,6 +5,7 @@ import { GET_PRODUCT_Request, GET_PRODUCT_Success, GET_PRODUCT_Failure } from '.
 import { GET_PRODUCT_ID_Request, GET_PRODUCT_ID_Success, GET_PRODUCT_ID_Failure } from './authActionTypes';
 import { GET_BRAND_Request, GET_BRAND_Success, GET_BRAND_Failure } from './authActionTypes';
 import { categoryRequest, categorySuccess, categoryFailure } from './authActionTypes';
+import { cartRequest, cartSuccess, cartFailure } from './authActionTypes';
 
 import { login } from '../services/auth/authService';
 import { signup } from '../services/auth/authService';
@@ -12,6 +13,17 @@ import { getProducts } from '../services/product/productService';
 import { getProductbyId_ } from '../services/product/productService';
 import { getBrands } from '../services/product/productService';
 import { Category } from '../services/product/productService';
+import { AddtoCart } from '../services/cart/cartService';
+
+export const cart = (data) => async (dispatch) => {
+    dispatch(cartRequest());
+    try {
+        const cart = await AddtoCart(data);
+        dispatch(cartSuccess(cart));
+    } catch (error) {
+        dispatch(cartFailure(error.message));
+    }
+};
 
 export const getcategory = () => async (dispatch) => {
     dispatch(categoryRequest());

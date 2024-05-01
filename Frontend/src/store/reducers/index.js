@@ -7,6 +7,7 @@ import { getProducts } from './authReducer';
 import { getProductbyid } from './authReducer';
 import { brand } from './authReducer';
 import { category } from './authReducer';
+import { cart_ } from './authReducer';
 
 const rootReducer = combineReducers({
     auth: authReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
     singleProduct: getProductbyid,
     brand,
     category,
+    usercart: cart_
 });
 
 export default rootReducer;

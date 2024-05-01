@@ -4,7 +4,40 @@ import { SIGNUP_REQUEST, SIGNUP_SUCCESS, SIGNUP_FAILURE } from '../actions/authA
 import { GET_PRODUCT_REQUEST, GET_PRODUCT_SUCCESS, GET_PRODUCT_FAILURE } from '../actions/authActionTypes';
 import { GET_PRODUCT_ID_REQUEST, GET_PRODUCT_ID_SUCCESS, GET_PRODUCT_ID_FAILURE } from '../actions/authActionTypes';
 import { GET_BRAND_REQUEST, GET_BRAND_SUCCESS, GET_BRAND_FAILURE } from '../actions/authActionTypes';
+import { CART_REQUEST, CART_SUCCESS, CART_FAILURE } from '../actions/authActionTypes';
 import { categoryREQUEST, categorySUCCESS, categoryFAILURE } from '../actions/authActionTypes';
+
+const cartInit = {
+    isLoading: false,
+    cart: null,
+    error: null
+};
+export const cart_ = (state = cartInit, action) => {
+    switch (action.type) {
+        case CART_REQUEST:
+            return {
+                ...state,
+                isLoading: true,
+                error: null
+            };
+        case CART_SUCCESS:
+            return {
+                ...state,
+                isLoading: false,
+                cart: action.payload,
+                error: null
+            };
+        case CART_FAILURE:
+            return {
+                ...state,
+                isLoading: false,
+                cart: null,
+                error: action.payload
+            };
+        default:
+            return state;
+    }
+};
 
 const CategoryInit = {
     isLoading: false,

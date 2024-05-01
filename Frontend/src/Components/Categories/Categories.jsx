@@ -9,36 +9,25 @@ import {
   faWalkieTalkie,
 } from "@fortawesome/free-solid-svg-icons";
 
-const Categories = () => {
-  // Array of objects containing icon and text data
-  const categoryData = [
-    { icon: faMobile, text: "Phone" },
-    { icon: faTv, text: "TV" },
-    { icon: faSwatchbook, text: "Swatchbook" },
-    { icon: faWalkieTalkie, text: "Walkie Talkie" },
-    { icon: faWalkieTalkie, text: "Walkie Talkie" },
-    { icon: faWalkieTalkie, text: "Walkie Talkie" },
-    { icon: faWalkieTalkie, text: "Walkie Talkie" },
-    { icon: faWalkieTalkie, text: "Walkie Talkie" },
-    { icon: faWalkieTalkie, text: "Walkie Talkie" },
-  ];
+const Categories = ({ category }) => {
+
 
   const containerRef = useRef(null);
 
   const handleScroll = (scrollOffset) => {
     if (containerRef.current) {
-        containerRef.current.scrollBy({
-          left: scrollOffset,
-          behavior: 'smooth'
-        });
+      containerRef.current.scrollBy({
+        left: scrollOffset,
+        behavior: 'smooth'
+      });
     }
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowLeft') {
-      handleScroll(-100); 
+      handleScroll(-100);
     } else if (e.key === 'ArrowRight') {
-      handleScroll(100); 
+      handleScroll(100);
     }
   };
 
@@ -62,15 +51,17 @@ const Categories = () => {
         </div>
       </div>
       <div className="mt-5 flex justify-start gap-14 overflow-x-auto custom-scrollbar" ref={containerRef}>
-        {categoryData.map((category, index) => (
+        {category && category.length > 0 ? category.map((category, index) => (
           <div
             key={index}
             className="flex flex-col justify-center items-center min-w-40 gap-4 border-black border-[1px] px-10 py-5 rounded-xl cursor-pointer duration-500 hover:bg-red-500"
           >
-            <FontAwesomeIcon className="w-10 h-10" icon={category.icon} />
-            <h1 className="font-semibold">{category.text}</h1>
+            {/* <FontAwesomeIcon className="w-10 h-10" icon={category.image} /> */}
+            <img className="iconImage" src={category.image && "http://localhost:5000/public/" + category.image} alt="" srcset="" />
+
+            <h1 className="font-semibold">{category.title}</h1>
           </div>
-        ))}
+        )) : ""}
       </div>
     </div>
   );

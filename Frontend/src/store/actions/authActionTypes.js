@@ -27,6 +27,24 @@ export const GET_BRAND_REQUEST = 'GET_BRAND_REQUEST';
 export const GET_BRAND_SUCCESS = 'GET_BRAND_SUCCESS';
 export const GET_BRAND_FAILURE = 'GET_BRAND_FAILURE';
 
+export const CART_REQUEST = 'CART_REQUEST';
+export const CART_SUCCESS = 'CART_SUCCESS';
+export const CART_FAILURE = 'CART_FAILURE';
+
+export const cartRequest = () => ({
+  type: CART_REQUEST
+});
+
+export const cartSuccess = (userData) => ({
+  type: CART_SUCCESS,
+  payload: userData
+});
+
+export const cartFailure = (error) => ({
+  type: CART_FAILURE,
+  payload: error
+});
+
 export const categoryRequest = () => ({
   type: categoryREQUEST
 });

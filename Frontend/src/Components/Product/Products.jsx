@@ -15,9 +15,27 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import "./products.css";
+import { cart } from '../../store/actions/authActions';
+import { useDispatch } from 'react-redux';
 
 
 const Products = ({ products }) => {
+  const dispatch = useDispatch();
+
+  const handleAtttocart = (e, id) => {
+    e.preventDefault();
+    let add_product = products.filter((item, i) => item._id === id)
+    let cartData = [{
+      product: id,
+      count: 1,
+      size: "M",
+      price: add_product[0].price,
+      color: add_product[0].color[0],
+    }]
+    console.log({ cartData })
+    dispatch(cart(cartData))
+  }
+
 
   const containerRef = useRef(null);
 
@@ -54,9 +72,9 @@ const Products = ({ products }) => {
     <div className="px-10 mt-20">
       <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-5">
         <div className="">
-          <div style={{ display: "flex"}}>
+          <div style={{ display: "flex" }}>
             <div className="bg-red-600 w-4 h-7"></div>
-            <span style={{color:"red",fontSize:'18px',fontWeight:"700",marginLeft:"10px"}}>Today's</span>
+            <span style={{ color: "red", fontSize: '18px', fontWeight: "700", marginLeft: "10px" }}>Today's</span>
           </div>
           <h1 className="text-black font-semibold text-3xl md:text-4xl overflow-y-hidden">
             Flash Sales
@@ -115,7 +133,11 @@ const Products = ({ products }) => {
                     className="w-40 h-40"
                   />
                 </div>
-                <button className="btnadtocart">Add to cart</button>
+                <form method="post">
+
+                  <button className="btnadtocart" onClick={(e) => handleAtttocart(e, product._id)}>Add to cart</button>
+                </form>
+
               </div>
 
 
