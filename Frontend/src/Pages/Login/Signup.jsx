@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Footer from '../../Components/Footer/Footer';
 import Top from '../../Components/Top/Top';
 import Navbar from '../../Components/Navbar/Navbar';
@@ -6,27 +6,46 @@ import Navbar from '../../Components/Navbar/Navbar';
 import "./login.css";
 import image from '../../assets/1.png'
 import { useDispatch, useSelector } from 'react-redux';
-import { signupUser } from '../../store/actions/authActions';
+
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { signupUser } from '../../Api/auth/authSlice';
 const Signup = () => {
     const [Firstname, setFirstname] = useState('');
     const [Email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const dispatch = useDispatch();
-    const { isLoading, error, user } = useSelector(state => state.signup);
-    const handleSubmit = (e) => {
+    const navigate = useNavigate()
+    // const { userSIGNUP } = useSelector(state => state.auth);
+    useEffect(() => {
+        // let token = localStorage.getItem("auth") ? JSON.parse(localStorage.getItem("auth")).token : null;
+        // if (token) {
+        //     navigate('/');
+        // }
+    }, [])
+    const user_ = localStorage.getItem("auth") ? JSON.parse(localStorage.getItem("auth")) : null;
+    let token = user_ ? user_.token : null;
+    if (token) {
+        navigate('/');
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        dispatch(signupUser({ Firstname, Email, password }));
-        if (error) {
-            toast.error(error);
-        } else {
+        let user = await dispatch(signupUser({ Firstname, Email, password }));
+        if (user.error) {
+            toast.error(user.payload);
+        }
+        if (!user.error) {
+            localStorage.setItem('auth', JSON.stringify(user.payload))
+            navigate('/');
             setFirstname("")
             setEmail("")
             setPassword("")
             toast.success("Registration Successfully");
         }
+
+
     };
 
 

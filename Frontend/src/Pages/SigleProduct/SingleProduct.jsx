@@ -6,20 +6,26 @@ import Top from '../../Components/Top/Top';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footer from '../../Components/Footer/Footer';
 import { useParams } from 'react-router-dom';
-import { getproductbyid } from '../../store/actions/authActions';
 import { useDispatch, useSelector } from 'react-redux';
+import { fetchProductById } from '../../Api/Product/productSlice';
+import { _addtocart, _carts } from '../../Api/cart/cartSlice';
+
 const SingleProduct = () => {
   const { id } = useParams();
 
   const dispatch = useDispatch()
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState('M');
-  const { isLoading, error, Sdata } = useSelector(state => state.singleProduct);
+  let [size_, setSize_] = useState([selectedSize]);
+  const { products, product, status, error } = useSelector(state => state.product);
+  let token = localStorage.getItem('auth') ? localStorage.getItem('auth') : null;
+  useEffect(() => {
+    dispatch(fetchProductById({ id }))
+  }, [id])
+  let Sdata = product ? product : null;
   const basePrice = Sdata ? Sdata.price : 0;
   const [totalPrice, setTotalPrice] = useState(basePrice);
-  useEffect(() => {
-    dispatch(getproductbyid(id))
-  }, [id])
+  // console.log({ products, product, status, error })
 
   const increaseQuantity = () => {
     const newQuantity = quantity + 1;
@@ -45,15 +51,29 @@ const SingleProduct = () => {
 
   const [mainImage, setMainImage] = useState(imageSources[0]);
 
+  const [color_, setColor] = useState(0);
   const handleThumbnailClick = (image) => {
     setMainImage(image);
   };
+  const handleThumbnailClickColor = (color, i) => {
+    setColor(i);
+
+  }
 
   const handleSizeChange = (size) => {
     setSelectedSize(size);
   };
-  console.log({ Sdata })
+  console.log({ size_ })
 
+  const handleAddtocart = async (e) => {
+    e.preventDefault();
+    let color = Sdata.color[color_].color;
+    let size = selectedSize;
+    let price_ = Sdata.price;
+    let addCart = await dispatch(_addtocart([{ product: id, color, price: price_, size, count: quantity }]))
+    console.log({ addCart })
+    dispatch(_carts());
+  }
   return (
 
     <>
@@ -81,7 +101,22 @@ const SingleProduct = () => {
                 />
               </div>
             ))}
+
+
+            {Sdata && Sdata.color.length > 0 && Sdata.color.map((color, i) => (
+              <div
+                key={color._id}
+                style={{ backgroundColor: `${color.color}`, border: `${color_ === i ? "3px solid black" : " "}` }}
+                className="w-24 h-24 md:w-20 md:h-20  rounded overflow-hidden shadow cursor-pointer transition-transform transform"
+                onClick={() => handleThumbnailClickColor(color, i)}
+              >
+
+              </div>
+            ))}
+
           </div>
+
+
 
           {/* Main Product Image */}
           <div className="flex justify-center items-center md:flex-1">
@@ -148,9 +183,32 @@ const SingleProduct = () => {
             </div>
 
             {/* Buy Now Button */}
-            <button className="w-full bg-red-500 text-white rounded-lg py-2 hover:bg-red-600 transition">
-              Buy Now
-            </button>
+
+
+            {token ?
+              <>
+                <form>
+                  <button onClick={handleAddtocart} className="w-full bg-gray-800 text-white rounded-lg my-2 py-2 hover:bg-gray-600 transition">
+                    Add to cart
+                  </button>
+                  <button className=" w-full bg-red-500 text-white rounded-lg  my-2 py-2 hover:bg-red-600 transition">
+                    Buy Now
+                  </button>
+                </form>
+              </> :
+              <>
+                <button className="w-full bg-gray-800 text-white rounded-lg  my-2 py-2 hover:bg-gray-600 transition">
+                  Add to cart
+                </button>
+                <button className=" w-full bg-red-500 text-white rounded-lg   my-2 py-2 hover:bg-red-600 transition">
+                  Buy Now
+                </button>
+              </>
+            }
+
+
+
+
 
             {/* Description */}
             <p className="text-sm text-gray-600" dangerouslySetInnerHTML={{ __html: Sdata ? Sdata.description : "" }}>

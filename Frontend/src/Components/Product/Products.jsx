@@ -15,14 +15,18 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import "./products.css";
-import { cart } from '../../store/actions/authActions';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { ToastContainer, toast } from "react-toastify";
+import { _addtocart, _carts } from "../../Api/cart/cartSlice";
 
 
 const Products = ({ products }) => {
   const dispatch = useDispatch();
+  let { addtocart } = useSelector((state) => state.addcart)
+  let token = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth')).token : null
 
-  const handleAtttocart = (e, id) => {
+
+  const handleAtttocart = async (e, id) => {
     e.preventDefault();
     let add_product = products.filter((item, i) => item._id === id)
     let cartData = [{
@@ -32,8 +36,18 @@ const Products = ({ products }) => {
       price: add_product[0].price,
       color: add_product[0].color[0],
     }]
-    console.log({ cartData })
-    dispatch(cart(cartData))
+    if (token) {
+      let cart = await dispatch(_addtocart(cartData))
+      if (cart.type === 'addtocart/fulfilled') {
+        toast.success("Added Succesfullt");
+        dispatch(_carts());
+      }
+      if (cart.type !== 'addtocart/fulfilled') {
+
+        toast.error(cart.payload)
+      }
+    }
+
   }
 
 
@@ -134,7 +148,6 @@ const Products = ({ products }) => {
                   />
                 </div>
                 <form method="post">
-
                   <button className="btnadtocart" onClick={(e) => handleAtttocart(e, product._id)}>Add to cart</button>
                 </form>
 
@@ -227,6 +240,7 @@ const Products = ({ products }) => {
         View All Products
       </button>
       <hr />
+      <ToastContainer />
     </div>
   );
 };

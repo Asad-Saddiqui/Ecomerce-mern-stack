@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBagShopping,
@@ -9,15 +9,26 @@ import {
   faStar,
   faUser,
   faXmark,
+
 } from "@fortawesome/free-solid-svg-icons";
 
 import { faHeart } from "@fortawesome/free-regular-svg-icons";
-import { Link, useLocation } from "react-router-dom";
-
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { _carts } from "../../Api/cart/cartSlice";
 const Navbar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [profile, setProfile] = useState(false);
+  const dispatch = useDispatch();
+  let { carts } = useSelector((state) => state.addcart)
+  useEffect(() => {
+    dispatch(_carts())
+  }, [])
+  let token = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth')).token : null;
+  console.log({ token });
+  console.log({ carts })
 
   const handleOpen = () => {
     setOpen(!open);
@@ -41,9 +52,10 @@ const Navbar = () => {
           <Link to="/about" className={`font-semibold text-lg  ${location.pathname === "/about" ? "line" : ""}`}>
             About
           </Link>
-          <Link to="/signup" className={`font-semibold text-lg  ${location.pathname === "/signup" ? "line" : ""}`}>
+          {!token && (<Link to="/signup" className={`font-semibold text-lg  ${location.pathname === "/signup" ? "line" : ""}`}>
             Signup
-          </Link>
+          </Link>)}
+
         </div>
 
         <div className="flex gap-2 justify-center items-center">
@@ -82,24 +94,37 @@ const Navbar = () => {
             <Link to="/about" className="font-semibold">
               About
             </Link>
-            <Link to="/signup" className="font-semibold">
-              Signup
-            </Link>
+            {!token &&
+              <Link to="/signup" className="font-semibold">
+                Signup
+              </Link>
+            }
           </div>
         </div>
       )}
 
       {/* Icons (Heart, Cart, User) */}
       <div className="flex flex-col gap-4 absolute pr-1 items-end z-10 right-1 top-32 lg:flex-row lg:top-[55px] lg:right-4 md:text-2xl">
-        <FontAwesomeIcon icon={faHeart} />
-        <Link to="/cart" className="relative">
-          <h1 className="rounded-[100%] bg-red-500 w-4 text-center absolute right-0 top-0 text-xs text-white">4</h1>
-          <FontAwesomeIcon icon={faCartShopping} />
-        </Link>
-        <button onClick={() => setProfile(!profile)}>
-          <FontAwesomeIcon icon={faUser} />
-        </button>
+        {token && <>
+
+          <FontAwesomeIcon icon={faHeart} />
+          <Link to="/cart" className="relative">
+            <h1 className="rounded-[100%] bg-red-500 w-4 text-center absolute right-0 top-0 text-xs text-white">{carts ? carts.length : ''}</h1>
+            <FontAwesomeIcon icon={faCartShopping} />
+          </Link>
+          <button onClick={() => setProfile(!profile)}>
+            <FontAwesomeIcon icon={faUser} />
+          </button>
+          <button onClick={() => {
+            localStorage.removeItem('auth');
+            navigate('/')
+          }}>
+            Logout
+          </button>
+        </>
+        }
       </div>
+
 
       {/* Profile section with close icon */}
       {profile && (

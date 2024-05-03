@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
 import Top from "../../Components/Top/Top";
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { _carts } from '../../Api/cart/cartSlice';
 
 const Button = ({ children, className, onClick }) => (
   <button
@@ -16,23 +18,28 @@ const Button = ({ children, className, onClick }) => (
 );
 
 const Cart = () => {
-  const [productDetail, setProductDetail] = useState([
-    {
-      name: "Shoes",
-      price: 60,
-      quantity: 2,
-    },
-    {
-      name: "Watch",
-      price: 10,
-      quantity: 2,
-    },
-    {
-      name: "Chair",
-      price: 620,
-      quantity: 2,
-    },
-  ]);
+  let dispatch = useDispatch();
+  let { carts } = useSelector((state) => state.addcart)
+  const [productDetail, setProductDetail] = useState([{name: "Shoes", price: 60, quantity: 2 }]);
+  useEffect(() => {
+    dispatch(_carts());
+    if (carts) {
+      carts.map((cart, i) => {
+        // let obj = {
+        //   product: cart._id,
+        //   count: 1,
+        //   size: "M",
+        //   price: add_product[0].price,
+        //   color: add_product[0].color[0],
+        // }
+        setProductDetail([]);
+      })
+    }
+  }, []);
+  let usercart = carts
+
+
+
 
   const calculateSubtotal = () =>
     productDetail.reduce(
@@ -93,13 +100,13 @@ const Cart = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {productDetail.map((item, index) => (
+              {usercart && (usercart.length > 0 ? usercart.map((item, index) => (
                 <tr key={index}>
                   <td className="px-3 py-4 text-gray-700 whitespace-nowrap">
-                    {item.name}
+                    {item.products[0].product.title}
                   </td>
                   <td className="px-3 py-4 text-gray-700 whitespace-nowrap">
-                    ${item.price}
+                    {item.products[0].product.price}
                   </td>
                   <td className="px-3 py-4 text-gray-700 whitespace-nowrap">
                     <div className="flex items-center border border-gray-300 rounded-lg px-1 py-1">
@@ -109,7 +116,9 @@ const Cart = () => {
                       >
                         <FontAwesomeIcon icon={faAngleDown} />
                       </button>
-                      <div className="px-2 py-1 text-center">{item.quantity}</div>
+                      <div className="px-2 py-1 text-center">
+                        {item.products[0].count}
+                      </div>
                       <button
                         onClick={() => incrementQuantity(index)}
                         className="px-2 py-1 hover:bg-gray-200 rounded-r-lg"
@@ -119,10 +128,10 @@ const Cart = () => {
                     </div>
                   </td>
                   <td className="px-3 py-4 text-gray-700 whitespace-nowrap">
-                    ${item.quantity * item.price}
+                    ${item.cartTotal}
                   </td>
                 </tr>
-              ))}
+              )) : "No data")}
             </tbody>
           </table>
         </div>
@@ -141,7 +150,7 @@ const Cart = () => {
             />
             <Button className="bg-red-500 text-white border-none">Apply Coupon</Button>
           </div>
-          
+
           <section className="flex flex-col gap-4 border-[1px] border-black rounded p-4 w-full sm:w-[300px]">
             <h2 className="font-bold text-center">Cart Total</h2>
             <div className="flex justify-between border-b pb-2">
@@ -157,7 +166,7 @@ const Cart = () => {
               <span>${subtotal}</span>
             </div>
             <Link to="/billing">
-            <Button className="bg-red-500 text-white border-none">Proceed to Checkout</Button>
+              <Button className="bg-red-500 text-white border-none">Proceed to Checkout</Button>
             </Link>
           </section>
         </div>

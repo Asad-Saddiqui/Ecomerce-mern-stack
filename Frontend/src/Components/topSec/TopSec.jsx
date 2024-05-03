@@ -64,7 +64,7 @@ const TopSec = ({ category, products }) => {
       <hr className="mb-10 md:mb-0" />
       <div className="flex flex-col main md:flex-row ">
         <div className="hidden md:flex flex-col gap-8 px-16 w-[25vw] py-10 border-r-[1px] border-black mr-14 font-semibold ">
-          {category.category && category.category.map((category, index) => (
+          {category && category.map((category, index) => (
             <h1
               key={index}
               className="text-nowrap flex justify-between hover:translate-x-6 duration-300 cursor-pointer"

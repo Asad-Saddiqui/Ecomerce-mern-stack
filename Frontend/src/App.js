@@ -13,7 +13,8 @@ import About from "./Pages/About/About";
 import SingleProduct from "./Pages/SigleProduct/SingleProduct";
 import Customization from "./Pages/Customization/Customization";
 import { Provider } from 'react-redux';
-import store from "./store/store";
+import { store } from "./App/store";
+
 function App() {
   return (
     <Provider store={store}>

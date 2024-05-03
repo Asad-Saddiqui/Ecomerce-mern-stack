@@ -1,20 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Top from '../../Components/Top/Top';
 import Navbar from '../../Components/Navbar/Navbar';
 import Footer from '../../Components/Footer/Footer';
-
+import { profileuser } from "../../Api/auth/authSlice";
 const Profile = () => {
   // Profile data state variables
-  const [firstName, setFirstName] = useState('Md');
-  const [lastName, setLastName] = useState('Rimel');
-  const [email, setEmail] = useState('rimel1111@gmail.com');
-  const [address, setAddress] = useState('Kingston, 5236, United States');
+  const { user, profile, status, error } = useSelector(state => state.auth);
+  const [firstName, setFirstName] = useState(`${profile ? profile.firstname : ""}`);
+  const [lastName, setLastName] = useState(`${profile ? profile.lastname ? profile.lastname : "" : ""}`);
+  const [email, setEmail] = useState(`${profile ? profile.email : ""}`);
+  const [address, setAddress] = useState(`${profile ? profile.address ? profile.address : "" : ""}`);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
-
+  const dispatch = useDispatch();
+  let navigate = useNavigate()
   // Temporary state variables
   const [tempFirstName, setTempFirstName] = useState(firstName);
   const [tempLastName, setTempLastName] = useState(lastName);
@@ -23,8 +27,18 @@ const Profile = () => {
   const [tempCurrentPassword, setTempCurrentPassword] = useState('');
   const [tempNewPassword, setTempNewPassword] = useState('');
   const [tempConfirmNewPassword, setTempConfirmNewPassword] = useState('');
+  const user_ = localStorage.getItem("auth") ? JSON.parse(localStorage.getItem("auth")) : null;
+  let token = user_ ? user_.token : null;
+  if (!token) {
+    navigate('/');
+  }
 
-  // Handle Save Changes with Toast Notification
+
+  useEffect(() => {
+    dispatch(profileuser());
+  }, [])
+
+
   const handleSaveChanges = () => {
     if (
       tempCurrentPassword === '' ||
@@ -67,7 +81,7 @@ const Profile = () => {
         {/* Welcome Message */}
         <div className="flex justify-between items-center my-4">
           <p className="text-black text-sm">Welcome!</p>
-          <p className="text-red-500 text-sm">{`${firstName} ${lastName}`}</p>
+          <p className="text-red-500 text-sm">{`${profile ? profile.firstname : ""}`}</p>
         </div>
 
         <div className="flex">
@@ -134,30 +148,30 @@ const Profile = () => {
               <div className="flex flex-col">
                 <label class="text-black">Password Changes</label>
                 <div className="flex flex-col gap-4">
-                  <input
+                  {/* <input
                     type="password"
                     placeholder="Current Password"
                     required
                     value={tempCurrentPassword}
                     onChange={(e) => setTempCurrentPassword(e.target.value)}
                     className="bg-neutral-100 p-2 rounded border-b-black border-b-[1px]"
-                  />
-                  <input
+                  /> */}
+                  {/* <input
                     type="password"
                     placeholder="New Password"
                     required
                     value={tempNewPassword}
                     onChange={(e) => setTempNewPassword(e.target.value)}
                     className="bg-neutral-100 p-2 rounded border-b-black border-b-[1px]"
-                  />
-                  <input
+                  /> */}
+                  {/* <input
                     type="password"
                     placeholder="Confirm New Password"
                     required
                     value={tempConfirmNewPassword}
                     onChange={(e) => setTempConfirmNewPassword(e.target.value)}
                     className="bg-neutral-100 p-2 rounded border-b-black border-b-[1px]"
-                  />
+                  /> */}
                 </div>
               </div>
             </div>

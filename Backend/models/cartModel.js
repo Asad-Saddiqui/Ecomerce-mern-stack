@@ -12,10 +12,7 @@ var cartSchema = new mongoose.Schema(
 
         count: Number,
         size: [],
-        color: [{
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Color",
-        }],
+        color: [],
         price: Number,
       },
     ],

@@ -1,39 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Footer from '../../Components/Footer/Footer';
 import Top from '../../Components/Top/Top';
 import Navbar from '../../Components/Navbar/Navbar';
-// import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import "./login.css";
 import image from '../../assets/1.png'
-import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../../store/actions/authActions';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../../Api/auth/authSlice";
+
 const Login = () => {
   const [Email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
   let navigate = useNavigate()
-  const { isLoading, error, user } = useSelector(state => state.auth);
-  const handleSubmit = (e) => {
+  // const state_ = authState.auth;
+  const user_ = localStorage.getItem("auth") ? JSON.parse(localStorage.getItem("auth")) : null;
+  let token = user_ ? user_.token : null;
+  if (token) {
+    navigate('/');
+  }
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(loginUser({ Email, password }));
-    if (error) {
-      toast.error(error);
-    }
-    if (user) {
-      toast.success("Login Successfully");
-      console.log({ user });
-      localStorage.setItem("auth", JSON.stringify(user))
-      navigate('/');
-    }
+    try {
+      // Dispatch the login action with email and password
+      let userdata = await dispatch(loginUser({ Email, password }));
+      console.log({ userdata })
+      if (userdata.error) {
+        toast.error(userdata.payload);
+      }
+      if (userdata) {
+        localStorage.setItem('auth', JSON.stringify(userdata.payload))
+        navigate('/');
+      }
+    } catch (error) {
+      toast.error(error.message);
 
+    }
   };
-
-
-
-
 
   return (
     <>

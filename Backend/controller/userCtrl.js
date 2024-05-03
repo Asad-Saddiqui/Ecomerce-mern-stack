@@ -29,10 +29,24 @@ const createUser = asyncHandler(async (req, res) => {
     if (!findUser) {
       // Create a new user if not found
       const newUser = await User.create({ firstname: Firstname, email: Email, password: hash });
+      console.log(newUser)
+      const updateuser = await User.findByIdAndUpdate(
+        newUser._id,
+        {
+          refreshToken: generateToken(newUser?._id),
+        },
+        { new: true }
+      );
       // No need to call newUser.save() since User.create() already saves the document
       newUser.password = null; // Clear password for security reasons
-      res.json(newUser);
-      console.log("saved");
+      res.json({
+        _id: findUser?._id,
+        firstname: newUser?.firstname,
+        lastname: newUser?.lastname,
+        email: newUser?.email,
+        mobile: newUser?.mobile,
+        token: generateToken(newUser?._id),
+      });
     } else {
       // Throw an error if the user already exists
       throw new Error("User Already Exists");
@@ -43,38 +57,39 @@ const createUser = asyncHandler(async (req, res) => {
 });
 
 
-// Login a user
 const loginUserCtrl = asyncHandler(async (req, res) => {
-  console.log(req.body)
-  const email = req.body.Email;
-  const password = req.body.password;
-  // check if user exists or not
-  const findUser = await User.findOne({ email });
-  console.log(findUser)
-  if (findUser && (await bcrypt.compare(password, findUser.password))) {
-    const updateuser = await User.findByIdAndUpdate(
-      findUser.id,
-      {
-        refreshToken: generateToken(findUser?._id),
-      },
-      { new: true }
-    );
-    // res.cookie("refreshToken", refreshToken, {
-    //   httpOnly: true,
-    //   maxAge: 72 * 60 * 60 * 1000,
-    // });
-    res.json({
-      _id: findUser?._id,
-      firstname: findUser?.firstname,
-      lastname: findUser?.lastname,
-      email: findUser?.email,
-      mobile: findUser?.mobile,
-      token: generateToken(findUser?._id),
-    });
-  } else {
-    throw new Error("Invalid Credentials");
+  try {
+    console.log(req.body);
+    const email = req.body.Email;
+    const password = req.body.password;
+    // check if user exists or not
+    const findUser = await User.findOne({ email });
+    if (findUser && (await bcrypt.compare(password, findUser.password))) {
+      const updateuser = await User.findByIdAndUpdate(
+        findUser.id,
+        {
+          refreshToken: generateToken(findUser?._id),
+        },
+        { new: true }
+      );
+      res.json({
+        _id: findUser?._id,
+        firstname: findUser?.firstname,
+        lastname: findUser?.lastname,
+        email: findUser?.email,
+        mobile: findUser?.mobile,
+        token: generateToken(findUser?._id),
+      });
+      console.log({ Login: "user Login successfully" });
+    } else {
+      throw new Error("Invalid Credentials");
+    }
+  } catch (error) {
+    throw new Error(error.message);
+
   }
 });
+
 
 // admin login
 
@@ -172,6 +187,19 @@ const updatedUser = asyncHandler(async (req, res) => {
       }
     );
     res.json(updatedUser);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
+const profile = asyncHandler(async (req, res) => {
+  console.log("calling api")
+  const { _id } = req.user;
+  validateMongoDbId(_id);
+
+  try {
+    const profile = await User.findById(_id);
+    profile.password = null;
+    res.json(profile);
   } catch (error) {
     throw new Error(error);
   }
@@ -346,6 +374,7 @@ const getWishlist = asyncHandler(async (req, res) => {
 });
 
 const userCart = asyncHandler(async (req, res) => {
+  console.log({ token: req.user })
   const { _id } = req.user;
   validateMongoDbId(_id);
 
@@ -364,9 +393,16 @@ const userCart = asyncHandler(async (req, res) => {
     }
 
     const cart = req.body;
+    console.log(cart)
+    let common = (value, count) => {
+      let array = [];
+      for (let index = 0; index < count; index++) {
+        array.push(value);
+      }
+      return array;
+    }
     const carts = [];
     const user = await User.findById(_id);
-
     for (const cartItem of cart) {
       const existingCart = await Cart.findOne({ orderby: user._id, confirm: false, 'products.product': cartItem.product });
 
@@ -374,8 +410,8 @@ const userCart = asyncHandler(async (req, res) => {
         const updatedProducts = {
           product: existingCart.products[0].product,
           count: existingCart.products[0].count + cartItem.count,
-          size: [...existingCart.products[0].size, cartItem.size],
-          color: [...existingCart.products[0].color, cartItem.color],
+          size: [...existingCart.products[0].size, ...common(cartItem.size, cartItem.count)],
+          color: [...existingCart.products[0].color, ...common(cartItem.color, cartItem.count)],
           price: existingCart.products[0].price,
         };
 
@@ -390,8 +426,8 @@ const userCart = asyncHandler(async (req, res) => {
         const newProducts = {
           product: cartItem.product,
           count: cartItem.count,
-          size: [cartItem.size],
-          color: [cartItem.color],
+          size: common(cartItem.size, cartItem.count),
+          color: common(cartItem.color, cartItem.count),
           price: cartItem.price,
         };
 
@@ -417,7 +453,7 @@ const getUserCart = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
   try {
-    const cart = await Cart.findOne({ orderby: _id }).populate(
+    const cart = await Cart.find({ orderby: _id, confirm: false }).populate(
       "products.product"
     );
     res.json(cart);
@@ -590,4 +626,5 @@ module.exports = {
   updateOrderStatus,
   getAllOrders,
   getOrderByUserId,
+  profile,
 };

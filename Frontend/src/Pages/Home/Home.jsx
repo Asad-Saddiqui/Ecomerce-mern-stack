@@ -11,23 +11,26 @@ import ImagesSec from "../../Components/ImagesSec/ImagesSec";
 import Feature from "../../Components/Feature/Feature";
 import BestSellingProducts from "../../Components/BestSellingProducts/BestSellingProducts";
 import { useDispatch, useSelector } from 'react-redux';
-import { getproduct } from '../../store/actions/authActions';
-import { getbrand } from '../../store/actions/authActions';
-import { getcategory } from '../../store/actions/authActions';
+import { fetchProducts } from '../../Api/Product/productSlice';
+import { getcategory } from "../../Api/category/categorySlice";
+
+// import { getbrand } from '../../store/actions/authActions';
+// import { getcategory } from '../../store/actions/authActions';
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { data } = useSelector(state => state.products);
-  const { brand } = useSelector(state => state.brand);
-  const category = useSelector(state => state.category);
+  const { products, product, status, error } = useSelector(state => state.product);
+  const { category } = useSelector(state => state.cat_);
+  // const { brand } = useSelector(state => state.brand);
+  // const category = useSelector(state => state.category);
   useEffect(() => {
-    dispatch(getproduct());
-    dispatch(getbrand());
+    dispatch(fetchProducts());
+    // dispatch(getbrand());
     dispatch(getcategory());
   }, []);
-  console.log("category==", category)
-  console.log(data)
-  console.log(brand)
+  let data = products
+  // console.log({ products, product, status, error })
+  console.log({ category })
   function isToday(dateString) {
     const createdAtDate = new Date(dateString);
     const today = new Date();
@@ -52,7 +55,7 @@ const Home = () => {
           <Products products={data} />
         }
       </div>
-      <Categories category={category.category} />
+      <Categories category={category} />
       {data && <BestSellingProducts products={data} />}
       <ImageComp />
       <ImagesSec />
