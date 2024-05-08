@@ -67,7 +67,7 @@ const SingleProduct = () => {
 
   const handleAddtocart = async (e) => {
     e.preventDefault();
-    let color = Sdata.color[color_].color;
+    let color = Sdata.color[color_]._id;
     let size = selectedSize;
     let price_ = Sdata.price;
     let addCart = await dispatch(_addtocart([{ product: id, color, price: price_, size, count: quantity }]))

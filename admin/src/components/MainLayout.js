@@ -18,10 +18,14 @@ import { SiBrandfolder } from "react-icons/si";
 import { BiCategoryAlt } from "react-icons/bi";
 import { Layout, Menu, theme } from "antd";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { profile__ } from "../features/profile/profileSlice";
 const { Header, Sider, Content } = Layout;
 const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
-
+  const user_ = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
+  const dispatch = useDispatch();
+  const { user, isError, isLoading, isSuccess, message } = useSelector(state => state.profile);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -29,12 +33,18 @@ const MainLayout = () => {
   useEffect(() => {
     const user_ = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
     const token = user_ ? user_.token : null;
+
     if (!token) {
       // If token does not exist, navigate to the root ("/") route
       navigate("/");
     }
-  }, [navigate]);
 
+  }, [navigate]);
+  useEffect(() => {
+    dispatch(profile__()); // Dispatch the profile__ action when the component mounts
+  }, [dispatch, navigate]);
+
+  console.log({ user, isError, isLoading, isSuccess, message })
   const logoutfunction = () => {
     localStorage.clear();
     window.location.href = "/";
@@ -45,8 +55,8 @@ const MainLayout = () => {
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo">
           <h2 className="text-white fs-5 text-center py-3 mb-0">
-            <span className="sm-logo">DC</span>
-            <span className="lg-logo">Dev Corner</span>
+            <span className="sm-logo">{isSuccess && (user && user.getaUser.firstname)}</span>
+            <span className="lg-logo">{isSuccess && (user && (user.getaUser.firstname + " " + user.getaUser.lastname))}</span>
           </h2>
         </div>
         <Menu
@@ -198,29 +208,21 @@ const MainLayout = () => {
             </div>
 
             <div className="d-flex gap-3 align-items-center dropdown">
-              <div>
-                <img
-                  width={32}
-                  height={32}
-                  src="https://stroyka-admin.html.themeforest.scompiler.ru/variants/ltr/images/customers/customer-4-64x64.jpg"
-                  alt=""
-                />
-              </div>
               <div
                 role="button"
                 id="dropdownMenuLink"
                 data-bs-toggle="dropdown"
                 aria-expanded="false"
               >
-                <h5 className="mb-0">John</h5>
-                <p className="mb-0">john.doe@example.com</p>
+                <h5 className="mb-0">{isSuccess && (user && user.getaUser.firstname + " " + user && user.getaUser.lastname)}</h5>
+                <p className="mb-0">{isSuccess && (user && user.getaUser.email)}</p>
               </div>
               <div className="dropdown-menu" aria-labelledby="dropdownMenuLink">
                 <li>
                   <Link
                     className="dropdown-item py-1 mb-1"
                     style={{ height: "auto", lineHeight: "20px" }}
-                    to="/"
+                    to="/admin/profile"
                   >
                     View Profile
                   </Link>

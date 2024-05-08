@@ -18,6 +18,8 @@ import "./products.css";
 import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from "react-toastify";
 import { _addtocart, _carts } from "../../Api/cart/cartSlice";
+import { addProductToWishlist, fetchWishlist } from "../../Api/wishlist/wishlistSlice";
+import { profileGet } from "../../Api/profile/profileSlice";
 
 
 const Products = ({ products }) => {
@@ -34,7 +36,7 @@ const Products = ({ products }) => {
       count: 1,
       size: "M",
       price: add_product[0].price,
-      color: add_product[0].color[0],
+      color: add_product[0].color[0]._id,
     }]
     if (token) {
       let cart = await dispatch(_addtocart(cartData))
@@ -134,6 +136,13 @@ const Products = ({ products }) => {
                   <FontAwesomeIcon
                     icon={faHeart}
                     className="icon1"
+                    onClick={(e) => {
+                      // addProductToWishlist
+                      if (token) {
+                        dispatch(addProductToWishlist(product._id))
+                        dispatch(profileGet())
+                      }
+                    }}
                   />
                   <FontAwesomeIcon
                     icon={faEye}

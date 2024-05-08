@@ -23,21 +23,17 @@ const Login = () => {
   }
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      // Dispatch the login action with email and password
-      let userdata = await dispatch(loginUser({ Email, password }));
-      console.log({ userdata })
-      if (userdata.error) {
-        toast.error(userdata.payload);
-      }
-      if (userdata) {
-        localStorage.setItem('auth', JSON.stringify(userdata.payload))
-        navigate('/');
-      }
-    } catch (error) {
-      toast.error(error.message);
 
+    let userdata = await dispatch(loginUser({ Email, password }));
+    console.log({ userdata })
+    if (userdata) {
+      localStorage.setItem('auth', JSON.stringify(userdata.payload))
     }
+
+    if (userdata.error) {
+      toast.error(userdata.payload);
+    }
+
   };
 
   return (

@@ -1,8 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
 import Top from "../../Components/Top/Top";
 import Navbar from "../../Components/Navbar/Navbar";
 import Footer from "../../Components/Footer/Footer";
-
+import { _carts } from "../../Api/cart/cartSlice";
+import { profileGet } from '../../Api/profile/profileSlice';
+import axios from "axios"
 const Button = ({ children, className, onClick }) => (
   <button
     className={`border border-black px-4 py-2 rounded ${className}`}
@@ -13,33 +17,43 @@ const Button = ({ children, className, onClick }) => (
 );
 
 const Billing = () => {
+  let dispatch = useDispatch();
+  let { carts } = useSelector((state) => state.addcart)
+  const { status, error, profile: userProfile } = useSelector(state => state.Profile);
+
   const [formValues, setFormValues] = useState({
-    firstName: "",
+    firstName: userProfile ? (userProfile.firstname + " " + userProfile.lastname) : "",
     companyName: "",
-    streetAddress: "",
+    streetAddress: userProfile ? userProfile.address : "",
     townCity: "",
-    phoneNumber: "",
-    emailAddress: "",
+    phoneNumber: userProfile ? userProfile.mobile : "",
+    emailAddress: userProfile ? userProfile.email : "",
   });
 
   const [formErrors, setFormErrors] = useState({});
+  useEffect(() => {
+    dispatch(_carts);
+    dispatch(profileGet());
 
+  }, [dispatch])
+  console.log({ userProfile })
+  // console.log({ billing: carts })
   const validateForm = () => {
     const errors = {};
     if (!formValues.firstName) {
       errors.firstName = "First Name is required.";
     }
     if (!formValues.streetAddress) {
-      errors.streetAddress= "Street Address is required.";
+      errors.streetAddress = "Street Address is required.";
     }
     if (!formValues.townCity) {
-      errors.townCity=  "City is required.";
+      errors.townCity = "City is required.";
     }
     if (!formValues.phoneNumber) {
       errors.phoneNumber = "Phone Number is required.";
     }
     if (!formValues.emailAddress) {
-        errors.emailAddress = "Email Address is required.";
+      errors.emailAddress = "Email Address is required.";
     }
 
     return errors;
@@ -53,16 +67,51 @@ const Billing = () => {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const errors = validateForm();
     setFormErrors(errors);
 
     if (Object.keys(errors).length === 0) {
-      alert("Form submitted successfully.");
+      let newarray = carts.map((item, i) => {
+        let newobj = {
+          color: item.products[0].color,
+          count: item.products[0].count,
+          size: item.products[0].size,
+          cartId: item._id,
+          prodId: item.products[0].product._id,
+        }
+        return newobj;
+      });
+
+      const user = JSON.parse(localStorage.getItem("auth"));
+
+      try {
+        const response = await axios.post(
+          'http://localhost:5000/pay',
+          {
+            ...formValues,
+            items: newarray
+          },
+          {
+            headers: {
+              "Authorization": `Bearer ${user.token}`,
+              "Content-Type": "application/json"
+            }
+          }
+        );
+        console.log({ data: response.data });
+        if (response.data && response.data.href) {
+          const href = response.data.href;
+          window.open(href, "_blank");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
     } else {
       alert("Please fill in all required fields.");
     }
   };
+
 
   const detail = [
     { name: "Leather Shoes", price: "10" },
@@ -190,10 +239,11 @@ const Billing = () => {
           <div className="flex-1 shadow-lg p-6">
             <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
             <div className="flex flex-col gap-6">
-              {detail.map((item, index) => (
+              {carts && carts.map((item, index) => (
                 <div key={index} className="flex justify-between">
-                  <span>{item.name}</span>
-                  <span>${item.price}</span>
+                  <span>{item.products[0].product.title}</span>
+                  <span>{item.products[0].count}</span>
+                  <span>${item.cartTotal}</span>
                 </div>
               ))}
             </div>
@@ -201,7 +251,7 @@ const Billing = () => {
             <div className="flex flex-col gap-5 mt-4">
               <div className="flex justify-between border-b-black border-b-[1px] py-2">
                 <h1>Total</h1>
-                <h1>$110</h1>
+                <h1> ${carts && carts.reduce((total, item) => total + item.cartTotal, 0)}</h1>
               </div>
             </div>
 
@@ -253,15 +303,15 @@ const Billing = () => {
                 </Button>
               </div>
 
-              
-            
+
+
               <Button
                 className="bg-red-500 text-white w-full sm:w-40 mt-2"
                 onClick={handleSubmit}
               >
                 Place Order
               </Button>
-           
+
             </div>
           </div>
         </div>

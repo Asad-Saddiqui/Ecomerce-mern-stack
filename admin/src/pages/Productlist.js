@@ -3,8 +3,9 @@ import { Table } from "antd";
 import { BiEdit } from "react-icons/bi";
 import { AiFillDelete } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
-import { getProducts } from "../features/product/productSlice";
+import { getProducts, delete_single_aproduct } from "../features/product/productSlice";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 const columns = [
   {
     title: "SNo",
@@ -56,11 +57,19 @@ const Productlist = () => {
       price: `${productState[i].price}`,
       action: (
         <>
-          <Link to="/" className=" fs-3 text-danger">
+          <Link to={`/admin/product/${productState[i]._id}`} className=" fs-3 text-danger">
             <BiEdit />
           </Link>
           <Link className="ms-3 fs-3 text-danger">
-            <AiFillDelete onClick={handledeleteProduct} />
+            <AiFillDelete onClick={async (e) => {
+              e.preventDefault();
+              console.log(productState, productState[i])
+              let delete_ = await dispatch(delete_single_aproduct(productState[i]._id));
+              if (delete_.type === "product/detele-a-products/fulfilled") {
+                dispatch(getProducts());
+                toast.success("Product Deleted Successfully")
+              }
+            }} />
           </Link>
         </>
       ),
@@ -72,6 +81,7 @@ const Productlist = () => {
       <h3 className="mb-4 title">Products</h3>
       <div>
         <Table columns={columns} dataSource={data1} />
+        <ToastContainer />
       </div>
     </div>
   );

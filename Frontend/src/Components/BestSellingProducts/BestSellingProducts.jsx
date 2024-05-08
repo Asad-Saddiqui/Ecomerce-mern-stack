@@ -26,8 +26,8 @@ const BestSellingProducts = ({ products }) => {
     <div className="px-10 mt-20">
       {/* Header Section */}
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-5 mb-12 ">
-          <div className="bg-red-600 w-5 h-5 rounded-[100%] mb-[75px] lg:mb-0" />
+        <div className="gap-5 mb-12 ">
+          <div className="bg-red-600 w-5 h-5  mb-[75px] lg:mb-0" />
           <h1 className="text-black font-semibold text-3xl md:text-4xl h-28 lg:h-12 overflow-y-hidden">
             Best Selling Products
           </h1>

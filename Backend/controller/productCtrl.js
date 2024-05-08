@@ -19,26 +19,41 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 const updateProduct = asyncHandler(async (req, res) => {
-  const id = req.params;
+  const { id } = req.params;
   validateMongoDbId(id);
   try {
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title);
+    // Extract the updated product data from the request body
+    const updatedProductData = req.body;
+    if (updatedProductData.title) {
+      updatedProductData.slug = slugify(updatedProductData.title);
     }
-    const updateProduct = await Product.findOneAndUpdate({ id }, req.body, {
+    if (Array.isArray(updatedProductData.color) && updatedProductData.color.length === 0) {
+      delete updatedProductData.color;
+    }
+    if (Array.isArray(updatedProductData.images) && updatedProductData.images.length === 0) {
+      delete updatedProductData.images;
+    }
+    console.log(updatedProductData);
+    console.log(updatedProductData);
+    // Find the product by its ID and update it with the new data
+    const updatedProduct = await Product.findOneAndUpdate({ _id: id }, updatedProductData, {
       new: true,
     });
-    res.json(updateProduct);
+    // console.log(updatedProduct)
+    res.json(updatedProduct);
   } catch (error) {
     throw new Error(error);
   }
 });
 
 const deleteProduct = asyncHandler(async (req, res) => {
-  const id = req.params;
+  const { id } = req.params;
   validateMongoDbId(id);
   try {
-    const deleteProduct = await Product.findOneAndDelete(id);
+    console.log(id);
+    const deleteProduct = await Product.findOneAndDelete({ _id: id });
+    console.log(deleteProduct);
+
     res.json(deleteProduct);
   } catch (error) {
     throw new Error(error);
@@ -102,14 +117,26 @@ const getAllProduct = asyncHandler(async (req, res) => {
       if (skip >= productCount) throw new Error("This Page does not exists");
     }
     const product = await query;
+    for (let i = 0; i < product.length; i++) {
+      let color__ = [];
+      await Promise.all(product[i].color.map(async (colorId) => {
+        let color_ = await Color.findById(colorId);
+        if (color_) {
+          color__.push({ _id: color_._id, title: color_.title });
+        }
+      }));
+      product[i].color = color__
+    }
     res.json(product);
   } catch (error) {
     throw new Error(error);
   }
 });
+
 const addToWishlist = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   const { prodId } = req.body;
+  console.log({ prodId })
   try {
     const user = await User.findById(_id);
     const alreadyadded = user.wishlist.find((id) => id.toString() === prodId);

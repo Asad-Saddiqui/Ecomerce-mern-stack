@@ -23,8 +23,10 @@ import Addproduct from "./pages/Addproduct";
 import Couponlist from "./pages/Couponlist";
 import AddCoupon from "./pages/AddCoupon";
 import ViewEnq from "./pages/ViewEnq";
+import UpdateProduct from "./pages/updateProduct";
 import ViewOrder from "./pages/ViewOrder";
 import { useNavigate } from "react-router-dom";
+import Profile from "./pages/Profile";
 
 function App() {
   const user_ = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
@@ -42,6 +44,7 @@ function App() {
           <Route path="enquiries" element={<Enquiries />} />
           <Route path="enquiries/:id" element={<ViewEnq />} />
           <Route path="blog-list" element={<Bloglist />} />
+          <Route path="profile" element={<Profile />} />
           <Route path="blog" element={<Addblog />} />
           <Route path="blog/:id" element={<Addblog />} />
           <Route path="coupon-list" element={<Couponlist />} />
@@ -64,6 +67,7 @@ function App() {
           <Route path="brand/:id" element={<Addbrand />} />
           <Route path="list-product" element={<Productlist />} />
           <Route path="product" element={<Addproduct />} />
+          <Route path="product/:id" element={<UpdateProduct />} />
         </Route>
       </Routes>
     </Router>

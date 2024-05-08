@@ -1,0 +1,11 @@
+.btndelete {
+    position: absolute;
+    background-color: red;
+    /* font-weight: 800; */
+    color: white;
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}

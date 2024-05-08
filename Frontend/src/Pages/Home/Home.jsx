@@ -30,7 +30,7 @@ const Home = () => {
   }, []);
   let data = products
   // console.log({ products, product, status, error })
-  console.log({ category })
+  console.log({ hjjsdjf:products })
   function isToday(dateString) {
     const createdAtDate = new Date(dateString);
     const today = new Date();

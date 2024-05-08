@@ -1,0 +1,115 @@
+.wishlist {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    margin-top: 38px;
+}
+
+.wishlist-content {
+    width: 80%;
+}
+
+.top-tag {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn2 {
+    border: 1px solid black;
+    padding: 4px 10px;
+}
+
+.card {
+    width: 23%;
+    background-color: #F5F5F5;
+    margin: 1%;
+    height: 270px;
+    float: left;
+}
+
+@media only screen and (max-width: 1092px) {
+
+    /* Your CSS styles for screens wider than 992px here */
+    .card {
+        width: 31%;
+    }
+}
+
+@media only screen and (max-width: 792px) {
+
+    /* Your CSS styles for screens wider than 992px here */
+    .card {
+        width: 47%;
+    }
+}
+
+@media only screen and (max-width: 592px) {
+
+    /* Your CSS styles for screens wider than 992px here */
+    .card {
+        width: 97%;
+        height: 300px;
+    }
+}
+
+.title {
+    display: flex;
+    justify-content: space-between;
+    margin: 0px 5px;
+
+}
+
+.btntitle {
+    font-size: medium;
+}
+
+.card-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 57%;
+    width: 100%;
+}
+
+.card-body img {
+    width: 50%;
+    height: 50%;
+}
+
+.btnadd {
+    width: 100%;
+    background-color: black;
+    color: white;
+    font-size: 14px;
+    padding: 6px;
+}
+
+.btnprice {
+    color: red;
+    font-size: 18px;
+}
+
+.btnpricehigh {
+    font-size: 13px;
+}
+
+.percent {
+    background-color: red;
+    display: block;
+    text-align: center;
+    margin-top: 2px;
+    border-radius: 10px;
+}
+
+.delicon {
+    background-color: white;
+    border-radius: 50%;
+    padding: 4px 8px;
+    cursor: pointer;
+}
+
+.content-section {
+    background-color: white;
+    height: 19%;
+}

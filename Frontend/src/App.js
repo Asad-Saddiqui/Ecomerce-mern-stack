@@ -14,6 +14,7 @@ import SingleProduct from "./Pages/SigleProduct/SingleProduct";
 import Customization from "./Pages/Customization/Customization";
 import { Provider } from 'react-redux';
 import { store } from "./App/store";
+import Whishlist from "./Pages/Wishlist/Whishlist";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/about" element={<About />} />
           <Route path="/product/:id" element={<SingleProduct />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/wishlist" element={<Whishlist />} />
           <Route path="/custom" element={<Customization />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -16,6 +16,7 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { _carts } from "../../Api/cart/cartSlice";
+import { profileGet } from "../../Api/profile/profileSlice";
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -23,12 +24,14 @@ const Navbar = () => {
   const [profile, setProfile] = useState(false);
   const dispatch = useDispatch();
   let { carts } = useSelector((state) => state.addcart)
+  const { status, error, profile: userwishlist } = useSelector(state => state.Profile);
+
   useEffect(() => {
     dispatch(_carts())
+    dispatch(profileGet())
   }, [])
   let token = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth')).token : null;
-  console.log({ token });
-  console.log({ carts })
+  // console.log({ carts })
 
   const handleOpen = () => {
     setOpen(!open);
@@ -107,7 +110,10 @@ const Navbar = () => {
       <div className="flex flex-col gap-4 absolute pr-1 items-end z-10 right-1 top-32 lg:flex-row lg:top-[55px] lg:right-4 md:text-2xl">
         {token && <>
 
-          <FontAwesomeIcon icon={faHeart} />
+          <Link to="/wishlist">
+            <h1 className="rounded-[100%] bg-red-500 w-4 text-center absolute  top-0 text-xs text-white">{userwishlist ? (userwishlist.wishlist ? userwishlist.wishlist.length : "") : ''}</h1>
+            <FontAwesomeIcon icon={faHeart} />
+          </Link>
           <Link to="/cart" className="relative">
             <h1 className="rounded-[100%] bg-red-500 w-4 text-center absolute right-0 top-0 text-xs text-white">{carts ? carts.length : ''}</h1>
             <FontAwesomeIcon icon={faCartShopping} />
