@@ -47,31 +47,51 @@ const ViewOrder = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(getOrderByUser(userId));
-  }, []);
-  let  orderState = useSelector((state) => state.auth.orderbyuser);
-  console.log(orderState ? orderState[0]:"not");
+  }, [userId]);
+  let orderState = useSelector((state) => state.auth.orderbyuser);
+  let myproducts = orderState && (orderState[0] ? orderState[0].products : "")
+  console.log({orderState,myproducts});
   const data1 = [];
-  // for (let i = 0; i < orderState.length; i++) {
-  //   data1.push({
-  //     key: i + 1,
-  //     name: orderState[i].product.title,
-  //     brand: orderState[i].product.brand,
-  //     count: orderState[i].count,
-  //     amount: orderState[i].product.price,
-  //     color: orderState[i].product.color,
-  //     date: orderState[i].product.createdAt,
-  //     action: (
-  //       <>
-  //         <Link to="/" className=" fs-3 text-danger">
-  //           <BiEdit />
-  //         </Link>
-  //         <Link className="ms-3 fs-3 text-danger" to="/">
-  //           <AiFillDelete />
-  //         </Link>
-  //       </>
-  //     ),
-  //   });
-  // }
+  if (myproducts) {
+    for (let i = 0; i < myproducts.length; i++) {
+      data1.push({
+        key: i + 1,
+        name: myproducts[i].product.title,
+        brand: myproducts[i].product.brand,
+        count: myproducts[i].count,
+        amount: myproducts[i].product.price,
+        color: (
+          <div style={{ display: "flex" }}>
+            {myproducts[i].color.map((col, index) => (
+              <div
+                key={index}
+                style={{
+                  margin: "4px",
+                  backgroundColor: `${col.title}`,
+                  width: "20px",
+                  height: "20px",
+                }}
+              >
+                {/* Optionally, you can display the color name */}
+                {/* {col.title} */}
+              </div>
+            ))}
+          </div>
+        ),
+        date: myproducts[i].product.createdAt,
+        action: (
+          <>
+            <Link to="/" className=" fs-3 text-danger">
+              <BiEdit />
+            </Link>
+            <Link className="ms-3 fs-3 text-danger" to="/">
+              <AiFillDelete />
+            </Link>
+          </>
+        ),
+      });
+    }
+  }
   return (
     <div>
       <h3 className="mb-4 title">View Order</h3>

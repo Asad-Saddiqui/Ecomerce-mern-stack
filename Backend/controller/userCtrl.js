@@ -3,6 +3,7 @@ const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
 const Coupon = require("../models/couponModel");
+const Color = require("../models/colorModel");
 const uniqid = require("uniqid");
 
 const asyncHandler = require("express-async-handler");
@@ -656,11 +657,29 @@ const getAllOrders = asyncHandler(async (req, res) => {
       .populate("products.product")
       .populate("orderby")
       .exec();
-    res.json(alluserorders);
+
+    // Map through each product in orders and populate colors asynchronously
+    const promises = alluserorders.map(async (order) => {
+      const productsWithColors = await Promise.all(order.products.map(async (item) => {
+        const colors = await Promise.all(item.color.map(async (col) => {
+          const colo_ = await Color.findById(col);
+          return colo_;
+        }));
+        return { ...item.toObject(), color: colors }; // Replace colors array with populated color objects
+      }));
+      return { ...order.toObject(), products: productsWithColors }; // Replace products array with updated products
+    });
+
+    // Wait for all promises to resolve
+    const updatedOrders = await Promise.all(promises);
+
+    console.log(updatedOrders[0].products[0].color);
+    res.json(updatedOrders);
   } catch (error) {
     throw new Error(error);
   }
 });
+
 const getOrderByUserId = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
@@ -669,6 +688,7 @@ const getOrderByUserId = asyncHandler(async (req, res) => {
       .populate("products.product")
       .populate("orderby")
       .exec();
+    console.log(userorders)
     res.json(userorders);
   } catch (error) {
     throw new Error(error);
