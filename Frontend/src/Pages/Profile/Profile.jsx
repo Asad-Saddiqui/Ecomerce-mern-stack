@@ -81,7 +81,7 @@ const Profile = () => {
 
             <div className="flex flex-col gap-3">
               <span className="text-base font-medium text-red-500">My Profile</span>
-              <span className="text-base font-medium">My Orders</span>
+              <Link to="/orders"> <span className="text-base font-medium">My Orders</span></Link>
               <Link to="/wishlist"><span className="text-base font-medium">My WishList</span></Link>
               <span className="text-black opacity-50">Address Book</span>
               <span className="text-black opacity-50">My Payment Options</span>

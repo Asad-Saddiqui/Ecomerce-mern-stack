@@ -1,0 +1,21 @@
+.cat-bg {
+  background-image: url("./../../../public/boot.jpg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+ 
+}
+
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none; /* Hide scrollbar */
+  }
+  
+  .no-scrollbar {
+    -ms-overflow-style: none; 
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none; 
+  }

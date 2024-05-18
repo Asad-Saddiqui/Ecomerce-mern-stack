@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../../Api/auth/authSlice";
+import { profileGet } from '../../Api/profile/profileSlice';
 
 const Login = () => {
   const [Email, setEmail] = useState('');
@@ -18,9 +19,7 @@ const Login = () => {
   // const state_ = authState.auth;
   const user_ = localStorage.getItem("auth") ? JSON.parse(localStorage.getItem("auth")) : null;
   let token = user_ ? user_.token : null;
-  if (token) {
-    navigate('/');
-  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -28,6 +27,8 @@ const Login = () => {
     console.log({ userdata })
     if (userdata) {
       localStorage.setItem('auth', JSON.stringify(userdata.payload))
+      dispatch(profileGet());
+      navigate("/");
     }
 
     if (userdata.error) {
@@ -38,6 +39,7 @@ const Login = () => {
 
   return (
     <>
+
       <Top />
       <Navbar />
       <div className="auth">

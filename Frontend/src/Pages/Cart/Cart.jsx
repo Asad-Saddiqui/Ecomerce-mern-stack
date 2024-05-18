@@ -27,6 +27,8 @@ const Cart = () => {
   const [productDetail, setProductDetail] = useState([]);
   const [subtotal, setSubtotal] = useState();
 
+  const Navigate = useNavigate()
+
   useEffect(() => {
     let carts_ = dispatch(_carts());
     carts_.then((data) => {
@@ -208,7 +210,7 @@ const Cart = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row justify-between items-center mt-4">
-          <Button className="mb-4 sm:mb-0 hover:bg-red-500 hover:text-white duration-300">Return to Shop</Button>
+          <Button onClick={()=>Navigate("/")} className="mb-4 sm:mb-0 hover:bg-red-500 hover:text-white duration-300">Return to Shop</Button>
           <Button className="hover:bg-red-500 hover:text-white duration-300" onClick={(e) => updateCart(e, productDetail)}>Update Cart</Button>
         </div>
 

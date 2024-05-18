@@ -29,7 +29,6 @@ const payProduct = async (req, res) => {
     const carts = req.body;
     const { _id } = req.user;
     let totalPrice = 0;
-    console.log(carts.items)
     let items_ = await Promise.all(carts.items.map(async (item) => {
         let findProduct = await Product.findById(item.prodId);
 
@@ -45,7 +44,6 @@ const payProduct = async (req, res) => {
             return obj;
         }
     }));
-    console.log(items_)
     let price = totalPrice + ".00";
 
     try {
@@ -56,7 +54,7 @@ const payProduct = async (req, res) => {
             },
             "redirect_urls": {
                 "return_url": "http://localhost:3000/success",
-                "cancel_url": "http://localhost:3000/cancel"
+                "cancel_url": "http://localhost:3000/cencle"
             },
             "transactions": [{
                 "amount": {
@@ -71,25 +69,29 @@ const payProduct = async (req, res) => {
             if (error) {
                 throw error;
             } else {
-                console.log(payment)
+
                 for (let i = 0; i < payment.links.length; i++) {
                     if (payment.links[i].rel === 'approval_url') {
 
                         let order = await Order.create({
                             products: items_,
                             paymentIntent: {
+                                status: 'Not Paid',
                                 paymentId: payment.id,
                                 intent: payment.intent,
                                 payer: payment.payer,
                                 transactions: payment.transactions,
-                                create_time:payment.create_time
+                                create_time: payment.create_time,
+
                             },
+                            streetAddress: req.body.streetAddress,
+                            townCity: req.body.townCity,
+                            phoneNumber: req.body.phoneNumber,
+                            company: req.body.companyName ? req.body.companyName : "",
                             orderby: _id
                         });
                         order.save();
-                        console.log(order)
                         res.json(payment.links[i]);
-
                     }
                 }
             }
@@ -102,31 +104,44 @@ const payProduct = async (req, res) => {
 
 
 const successPage = async (req, res) => {
+    const { _id } = req.user;
 
     try {
 
-        const payerId = req.query.PayerID;
+        const payerId = req.query.payerId;
         const paymentId = req.query.paymentId;
-
-        const execute_payment_json = {
-            "payer_id": payerId,
-            "transactions": [{
-                "amount": {
-                    "currency": "USD",
-                    "total": "25.00"
-                }
-            }]
-        };
-
-        paypal.payment.execute(paymentId, execute_payment_json, function (error, payment) {
-            if (error) {
-                console.log(error.response);
-                throw error;
-            } else {
-                console.log(JSON.stringify(payment));
-                res.render('success');
+        const token = req.query.token;
+        console.log({ payerId, paymentId, token })
+        let order_ = await Order.findOne({ "paymentIntent.paymentId": paymentId });
+        if (order_) {
+            const execute_payment_json = {
+                "payer_id": payerId,
+                "transactions": [{
+                    "amount": {
+                        "currency": "USD",
+                        "total": order_.paymentIntent.transactions[0].amount.total
+                    }
+                }]
             }
-        });
+            paypal.payment.execute(paymentId, execute_payment_json, async function (error, payment) {
+                if (error) {
+                    console.log(error.response);
+                    throw error;
+                } else {
+                    const updatedOrder = await Order.findByIdAndUpdate(
+                        order_._id,
+                        { "paymentIntent.status": payment.state },
+                        { new: true }
+                    );
+                    if (updatedOrder) {
+                        await Cart.deleteMany({ orderby: _id });
+                        res.json(updatedOrder);
+                    }
+                }
+            });
+        }
+
+
 
     } catch (error) {
         console.log(error.message);
@@ -137,9 +152,7 @@ const successPage = async (req, res) => {
 const cancelPage = async (req, res) => {
 
     try {
-
         res.render('cancel');
-
     } catch (error) {
         console.log(error.message);
     }

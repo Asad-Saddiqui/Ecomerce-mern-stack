@@ -102,7 +102,7 @@ const Billing = () => {
         console.log({ data: response.data });
         if (response.data && response.data.href) {
           const href = response.data.href;
-          window.open(href, "_blank");
+          window.open(href);
         }
       } catch (error) {
         console.error("Error:", error);

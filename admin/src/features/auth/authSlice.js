@@ -44,6 +44,26 @@ export const getOrderByUser = createAsyncThunk(
     }
   }
 );
+export const updateOrderByid = createAsyncThunk(
+  "order/update-order",
+  async (data, thunkAPI) => {
+    try {
+      return await authService.updateOrder(data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
+export const deleteOrderByid = createAsyncThunk(
+  "order/delete-order",
+  async (data, thunkAPI) => {
+    try {
+      return await authService.deleteorder(data);
+    } catch (error) {
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+);
 
 export const authSlice = createSlice({
   name: "auth",
@@ -98,7 +118,39 @@ export const authSlice = createSlice({
         state.isSuccess = false;
         state.message = action.error;
         state.isLoading = false;
-      });
+      })
+      .addCase(updateOrderByid.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(updateOrderByid.fulfilled, (state, action) => {
+        state.isError = false;
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.updateOrder = action.payload;
+        state.message = "success";
+      })
+      .addCase(updateOrderByid.rejected, (state, action) => {
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+        state.isLoading = false;
+      })
+      .addCase(deleteOrderByid.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(deleteOrderByid.fulfilled, (state, action) => {
+        state.isError = false;
+        state.isLoading = false;
+        state.isSuccess = true;
+        state.deleteOrders = action.payload;
+        state.message = "success";
+      })
+      .addCase(deleteOrderByid.rejected, (state, action) => {
+        state.isError = true;
+        state.isSuccess = false;
+        state.message = action.error;
+        state.isLoading = false;
+      })
   },
 });
 

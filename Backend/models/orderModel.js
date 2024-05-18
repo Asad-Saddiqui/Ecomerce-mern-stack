@@ -28,6 +28,10 @@ var orderSchema = new mongoose.Schema(
         "Delivered",
       ],
     },
+    streetAddress: String,
+    townCity: String,
+    phoneNumber: String,
+    company: String,
     orderby: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

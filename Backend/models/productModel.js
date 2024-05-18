@@ -66,6 +66,7 @@ var productSchema = new mongoose.Schema(
     ],
     color: [],
     tags: String,
+    discount: Number,
     ratings: [
       {
         star: Number,

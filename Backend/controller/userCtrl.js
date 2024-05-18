@@ -2,6 +2,7 @@ const User = require("../models/userModel");
 const Product = require("../models/productModel");
 const Cart = require("../models/cartModel");
 const Order = require("../models/orderModel");
+const Contact = require("../models/contactModel");
 const Coupon = require("../models/couponModel");
 const Color = require("../models/colorModel");
 const uniqid = require("uniqid");
@@ -57,6 +58,22 @@ const createUser = asyncHandler(async (req, res) => {
   }
 });
 
+const message_ = async (req, res) => {
+  try {
+    const { message, userId } = req.body;
+
+    const newContact = new Contact({
+      message,
+      userId,
+    });
+
+    const savedContact = await newContact.save();
+    res.status(201).json({ msg: "Created Successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 
 const loginUserCtrl = asyncHandler(async (req, res) => {
   try {
@@ -91,34 +108,26 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
   }
 });
 
-
 // admin login
 
 const loginAdmin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  // check if user exists or not
-  //console.log("login route")
   const findAdmin = await User.findOne({ email });
   if (findAdmin.role !== "admin") throw new Error("Not Authorised");
   if (findAdmin && (await findAdmin.isPasswordMatched(password))) {
     const refreshToken = await generateRefreshToken(findAdmin?._id);
     const updateuser = await User.findByIdAndUpdate(
       findAdmin.id,
-      {
-        refreshToken: refreshToken,
-      },
+      { refreshToken: refreshToken },
       { new: true }
     );
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      maxAge: 72 * 60 * 60 * 1000,
-    });
     res.json({
       _id: findAdmin?._id,
       firstname: findAdmin?.firstname,
       lastname: findAdmin?.lastname,
       email: findAdmin?.email,
       mobile: findAdmin?.mobile,
+      refreshToken,
       token: generateToken(findAdmin?._id),
     });
   } else {
@@ -129,19 +138,38 @@ const loginAdmin = asyncHandler(async (req, res) => {
 // handle refresh token
 
 const handleRefreshToken = asyncHandler(async (req, res) => {
-  const cookie = req.cookies;
-  if (!cookie?.refreshToken) throw new Error("No Refresh Token in Cookies");
-  const refreshToken = cookie.refreshToken;
-  const user = await User.findOne({ refreshToken });
-  if (!user) throw new Error(" No Refresh token present in db or not matched");
-  jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoded) => {
+  let refreshToken = req.headers.refreshtoken; // Accessing from cookies instead of headers
+  console.log(req.headers)
+
+  if (!refreshToken) throw new Error("No Refresh Token");
+  const user = await User.findOne({ refreshToken: refreshToken });
+  if (!user) throw new Error("No Refresh token present in db or not matched");
+
+  jwt.verify(refreshToken, process.env.JWT_SECRET, async (err, decoded) => {
     if (err || user.id !== decoded.id) {
       throw new Error("There is something wrong with refresh token");
     }
-    const accessToken = generateToken(user?._id);
-    res.json({ accessToken });
+
+    const newRefreshToken = generateRefreshToken(user._id);
+    await User.findByIdAndUpdate(
+      user.id,
+      { refreshToken: newRefreshToken },
+      { new: true }
+    );
+
+    const accessToken = generateToken(user._id);
+    res.json({
+      _id: user._id,
+      firstname: user.firstname,
+      lastname: user.lastname,
+      email: user.email,
+      mobile: user.mobile,
+      refreshToken: newRefreshToken,
+      token: accessToken,
+    });
   });
 });
+
 
 // logout functionality
 
@@ -226,7 +254,6 @@ const updatedUser = asyncHandler(async (req, res) => {
   }
 });
 const profile = asyncHandler(async (req, res) => {
-  //console.log("calling api")
   const { _id } = req.user;
   validateMongoDbId(_id);
 
@@ -569,6 +596,17 @@ const deleteCart = asyncHandler(async (req, res) => {
     throw new Error(error);
   }
 });
+const deleteOrder = asyncHandler(async (req, res) => {
+  let { id } = req.params
+  validateMongoDbId(id);
+  try {
+
+    const order_ = await Order.findByIdAndDelete({ _id: id });
+    res.json(order_);
+  } catch (error) {
+    throw new Error(error);
+  }
+});
 
 const applyCoupon = asyncHandler(async (req, res) => {
   const { coupon } = req.body;
@@ -641,7 +679,7 @@ const getOrders = asyncHandler(async (req, res) => {
   const { _id } = req.user;
   validateMongoDbId(_id);
   try {
-    const userorders = await Order.findOne({ orderby: _id })
+    const userorders = await Order.find({ orderby: _id })
       .populate("products.product")
       .populate("orderby")
       .exec();
@@ -672,8 +710,6 @@ const getAllOrders = asyncHandler(async (req, res) => {
 
     // Wait for all promises to resolve
     const updatedOrders = await Promise.all(promises);
-
-    console.log(updatedOrders[0].products[0].color);
     res.json(updatedOrders);
   } catch (error) {
     throw new Error(error);
@@ -684,31 +720,42 @@ const getOrderByUserId = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
   try {
-    const userorders = await Order.findOne({ orderby: id })
+    const userorders_ = await Order.findOne({ _id: id })
       .populate("products.product")
       .populate("orderby")
       .exec();
-    console.log(userorders)
-    res.json(userorders);
+
+    const productsWithColors = await Promise.all(userorders_.products.map(async (item) => {
+      const colors = await Promise.all(item.color.map(async (col) => {
+        const colo_ = await Color.findById(col);
+        return colo_;
+      }));
+      return { ...item.toObject(), color: colors };
+    }));
+
+    userorders_.products = productsWithColors;
+    console.log(userorders_); // Logging the updated user orders
+
+    res.json(userorders_); // Sending the updated user orders as JSON response
   } catch (error) {
     throw new Error(error);
   }
 });
+
 const updateOrderStatus = asyncHandler(async (req, res) => {
   const { status } = req.body;
   const { id } = req.params;
   validateMongoDbId(id);
+  console.log(req.body)
   try {
     const updateOrderStatus = await Order.findByIdAndUpdate(
-      id,
+      { _id: id },
       {
         orderStatus: status,
-        paymentIntent: {
-          status: status,
-        },
       },
       { new: true }
     );
+    console.log({ updateOrderStatus })
     res.json(updateOrderStatus);
   } catch (error) {
     throw new Error(error);
@@ -744,4 +791,6 @@ module.exports = {
   getAllOrders,
   getOrderByUserId,
   profile,
+  deleteOrder,
+  message_
 };

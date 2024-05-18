@@ -25,7 +25,9 @@ const {
   getOrders,
   updateOrderStatus,
   getAllOrders,
-  profile, updateCart
+  profile, updateCart, getOrderByUserId,
+  deleteOrder,
+  message_
 } = require("../controller/userCtrl");
 const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
 const router = express.Router();
@@ -42,10 +44,11 @@ router.post("/cart", authMiddleware, userCart);
 router.post("/cart/applycoupon", authMiddleware, applyCoupon);
 router.post("/cart/cash-order", authMiddleware, createOrder);
 router.get("/all-users", getallUser);
+router.post("/contact", authMiddleware, message_);
 router.get("/profile_", authMiddleware, profile);
 router.get("/get-orders", authMiddleware, getOrders);
 router.get("/getallorders", authMiddleware, isAdmin, getAllOrders);
-router.post("/getorderbyuser/:id", authMiddleware, isAdmin, getAllOrders);
+router.post("/getorderbyuser/:id", authMiddleware, isAdmin, getOrderByUserId);
 router.get("/refresh", handleRefreshToken);
 router.get("/logout", logout);
 router.get("/wishlist", authMiddleware, getWishlist);
@@ -54,7 +57,7 @@ router.get("/cart", authMiddleware, getUserCart);
 router.get("/:id", authMiddleware, isAdmin, getaUser);
 router.delete("/empty-cart", authMiddleware, emptyCart);
 router.delete("/cart/delete/:id", authMiddleware, deleteCart);
-router.delete("/:id", deleteaUser);
+router.delete("/order/:id", authMiddleware, isAdmin, deleteOrder);
 router.put(
   "/order/update-order/:id",
   authMiddleware,

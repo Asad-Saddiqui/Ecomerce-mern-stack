@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import profileService from "./profileServices";
 
 export const profileGet = createAsyncThunk(
@@ -24,6 +24,7 @@ export const updateProfile = createAsyncThunk(
         }
     }
 );
+export const resetState = createAction("Reset_all");
 
 const initialState = {
     profile: null,
@@ -49,7 +50,7 @@ const profileSlice = createSlice({
             })
             .addCase(profileGet.rejected, (state, action) => {
                 state.loading = false;
-                state.error = action.payload.error; // Corrected to access error property
+                state.error = action.payload; // Corrected to access error property
             })
             .addCase(updateProfile.pending, (state) => {
                 state.loading = true;
@@ -63,7 +64,9 @@ const profileSlice = createSlice({
             .addCase(updateProfile.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload.error; // Corrected to access error property
-            });
+            })
+            .addCase(resetState, () => initialState);
+
     },
 });
 

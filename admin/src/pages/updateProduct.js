@@ -22,6 +22,7 @@ const UpdateProduct = () => {
     const [color_, setColor_] = useState([]);
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
+    const [discount, setdiscount] = useState("");
     const [price, setPrice] = useState("");
     const [category, setCategory] = useState("");
     const [brand, setBrand] = useState("");
@@ -36,6 +37,7 @@ const UpdateProduct = () => {
             setCategory(aProduct.category);
             setBrand(aProduct.brand);
             setQuantity(aProduct.quantity);
+            setdiscount(aProduct.discount ? aProduct.discount : "");
             const newColors = aProduct.color.map((col) => col.color);
             setColor_(newColors);
         }
@@ -78,6 +80,7 @@ const UpdateProduct = () => {
             title,
             description,
             price,
+            discount,
             category,
             brand,
             quantity,
@@ -126,6 +129,13 @@ const UpdateProduct = () => {
                         name="price"
                         val={price}
                         onChng={(e) => setPrice(e.target.value)}
+                    />
+                    <CustomInput
+                        type="number"
+                        label="Enter Product discount"
+                        name="price"
+                        val={discount}
+                        onChng={(e) => setdiscount(e.target.value)}
                     />
                     <div className="error"></div>
                     <select

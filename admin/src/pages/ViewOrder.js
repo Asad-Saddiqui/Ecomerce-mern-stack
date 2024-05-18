@@ -23,7 +23,7 @@ const columns = [
     dataIndex: "count",
   },
   {
-    title: "Color",
+    title: "Color & Size",
     dataIndex: "color",
   },
   {
@@ -48,21 +48,21 @@ const ViewOrder = () => {
   useEffect(() => {
     dispatch(getOrderByUser(userId));
   }, [userId]);
-  let orderState = useSelector((state) => state.auth.orderbyuser);
-  let myproducts = orderState && (orderState[0] ? orderState[0].products : "")
-  console.log({orderState,myproducts});
+  let { isError, isLoading, isSuccess, orderbyuser } = useSelector((state) => state.auth);
+  console.log({ isError, isLoading, isSuccess, orderbyuser })
+  // let myproducts = orderState && (orderState[0] ? orderState[0].products : "")
   const data1 = [];
-  if (myproducts) {
-    for (let i = 0; i < myproducts.length; i++) {
+  if (orderbyuser) {
+    for (let i = 0; i < orderbyuser.products.length; i++) {
       data1.push({
         key: i + 1,
-        name: myproducts[i].product.title,
-        brand: myproducts[i].product.brand,
-        count: myproducts[i].count,
-        amount: myproducts[i].product.price,
+        name: orderbyuser.products[i].product.title,
+        brand: orderbyuser.products[i].product.brand,
+        count: orderbyuser.products[i].count,
+        amount: "$" + orderbyuser.products[i].product.price + ".00",
         color: (
           <div style={{ display: "flex" }}>
-            {myproducts[i].color.map((col, index) => (
+            {orderbyuser.products[i].color.map((col, index) => (
               <div
                 key={index}
                 style={{
@@ -70,15 +70,15 @@ const ViewOrder = () => {
                   backgroundColor: `${col.title}`,
                   width: "20px",
                   height: "20px",
+                  textAlign: "center"
                 }}
               >
-                {/* Optionally, you can display the color name */}
-                {/* {col.title} */}
+                {orderbyuser.products[i].size[index]}
               </div>
             ))}
           </div>
         ),
-        date: myproducts[i].product.createdAt,
+        date: orderbyuser.products[i].product.createdAt,
         action: (
           <>
             <Link to="/" className=" fs-3 text-danger">
@@ -95,6 +95,27 @@ const ViewOrder = () => {
   return (
     <div>
       <h3 className="mb-4 title">View Order</h3>
+      <div>
+        Name:{orderbyuser && (orderbyuser.orderby.firstname + " " + (orderbyuser.orderby.lastname ? orderbyuser.orderby.lastname : ""))}
+      </div>
+      <div>
+        Email:{orderbyuser && orderbyuser.orderby.email}
+      </div>
+      <div>
+        Phone # :{orderbyuser && orderbyuser.phoneNumber}
+      </div>
+      <div>
+        City  :{orderbyuser && orderbyuser.townCity}      </div>
+      <div>
+        Address :{orderbyuser && orderbyuser.streetAddress}
+      </div>
+      {orderbyuser && orderbyuser.company && (<>
+        <div>
+          Company :{orderbyuser && orderbyuser.company}
+        </div>
+
+      </>)}
+
       <div>
         <Table columns={columns} dataSource={data1} />
       </div>

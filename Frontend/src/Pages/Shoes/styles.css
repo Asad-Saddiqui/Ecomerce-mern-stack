@@ -1,0 +1,52 @@
+@import url("https://rsms.me/inter/inter.css");
+
+.shoe {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  outline: none;
+  width: 100vw;
+  height: 100vh;
+}
+
+.shoe {
+  background: white;
+  font-family: "Inter var", sans-serif;
+  display: flex;
+  justify-content: center;
+}
+
+.shoe {
+  width: 76ch;
+}
+
+.name_shoe {
+  /* position: absolute; */
+  /* top: 43px;
+  left: 140px; */
+  width: 100%;
+  height: 30px;
+  overflow-y: hidden;
+  padding: 0;
+  /* margin: 40px; */
+  font-size: 2em;
+  line-height: 0.7em;
+  /* letter-spacing: -6px; */
+  text-align: right;
+  display: flex;
+  margin-bottom: 2rem;
+
+  justify-content: end;
+  color: #272730;
+} 
+
+.picker {
+  position: absolute !important;
+  right: 0;
+  top: 0;
+  /* top: 74px;
+  left: 70px; */
+  width: 90px !important;
+  height: 90px !important;
+}

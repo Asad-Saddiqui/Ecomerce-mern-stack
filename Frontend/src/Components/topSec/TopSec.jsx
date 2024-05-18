@@ -37,18 +37,12 @@ const ImageSwapper = ({ imageUrl, onNext, onPrevious }) => {
     </div>
   );
 };
-
 const TopSec = ({ category, products }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  console.log({ topsec: products });
 
   let images_ = products ? (products.length > 0 && products.map((item) => item.images[0].url)) : [];
-  console.log({ images_ });
-  // const images = [
-  //   "https://source.unsplash.com/random",
-  //   "https://media.istockphoto.com/id/1432249453/photo/a-male-programmer-shows-a-female-colleague-a-coding-technique-the-codes-are-visible-on-the.webp?b=1&s=170667a&w=0&k=20&c=vEz9LXgvZNn8sHbVnPLTmnTtlqZtNKXQLg8xrbVc5rM=",
-  //   "https://media.istockphoto.com/id/1536191188/photo/web-developers-using-a-computer-together-in-an-office.webp?b=1&s=170667a&w=0&k=20&c=12s792O3eRQUBbfts90cqJjCAnGkR_UZ_2s2LbBm6GM=",
-  // ];
+  let catArray = category ? category.slice(0, 7) : null
+
 
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % products.length);
@@ -59,25 +53,29 @@ const TopSec = ({ category, products }) => {
       prevIndex === 0 ? products.length - 1 : prevIndex - 1
     );
   };
+  console.log({ products })
+
   return (
     <div>
       <hr className="mb-10 md:mb-0" />
       <div className="flex flex-col main md:flex-row ">
         <div className="hidden md:flex flex-col gap-8 px-16 w-[25vw] py-10 border-r-[1px] border-black mr-14 font-semibold ">
-          {category && category.map((category, index) => (
-            <h1
-              key={index}
-              className="text-nowrap flex justify-between hover:translate-x-6 duration-300 cursor-pointer"
-            >
-              {category.title} <span>&gt;</span>
-            </h1>
+          {catArray && catArray.map((category, index) => (
+            <>
+              <h1
+                key={index}
+                className="text-nowrap flex justify-between hover:translate-x-6 duration-300 cursor-pointer"
+              >
+                {category.title} <span>&gt;</span>
+              </h1>
+            </>
           ))}
         </div>
 
         <div className="right flex justify-center items-center">
-          {images_ .length>0 &&
+          {images_.length > 0 &&
             <ImageSwapper
-            imageUrl={images_[currentIndex]}
+              imageUrl={images_[currentIndex]}
               onNext={handleNext}
               onPrevious={handlePrevious}
             />

@@ -5,6 +5,7 @@ import categorySlice from "../Api/category/categorySlice";
 import addtocartSlice from "../Api/cart/cartSlice";
 import profileSlice from "../Api/profile/profileSlice";
 import wishlistSlice from "../Api/wishlist/wishlistSlice";
+import orderSLice from "../Api/Order/orderSlice";
 export const store = configureStore({
     reducer: {
         auth: authReducer,
@@ -13,5 +14,6 @@ export const store = configureStore({
         addcart: addtocartSlice,
         Profile: profileSlice,
         userWishlist: wishlistSlice,
+        Myorder: orderSLice,
     },
 });

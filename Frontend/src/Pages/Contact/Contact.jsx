@@ -5,17 +5,28 @@ import Footer from '../../Components/Footer/Footer';
 
 const Contact = () => {
   const [isToastVisible, setIsToastVisible] = useState(false);
+  const [message, setMessage] = useState("")
+  const handleSubmit = async (event) => {
 
-  const handleSubmit = (event) => {
     event.preventDefault(); // Prevent form submission
+    const user = JSON.parse(localStorage.getItem("auth"));
 
-    // Display the toast when form is submitted successfully
-    setIsToastVisible(true);
+    if (message.trim()) {
+      let response = await fetch('http://localhost:5000/api/user/contact', {
+        method: "POST",
 
-    // Hide the toast after 3 seconds
-    setTimeout(() => {
-      setIsToastVisible(false);
-    }, 3000);
+        headers: {
+          "authorization": `Bearer ${user.token}`,
+          'Content-Type': 'application/json'
+        },
+      })
+      response = await response.json();
+      setIsToastVisible(true);
+      setTimeout(() => {
+        setIsToastVisible(false);
+      }, 3000);
+    }
+
   };
 
   return (
@@ -28,7 +39,7 @@ const Contact = () => {
 
       <Top />
       <Navbar />
-      
+
       <div className="px-4 sm:px-6 md:px-8 lg:px-24 my-10">
         {/* Breadcrumb Section */}
         <nav aria-label="breadcrumb">
@@ -68,7 +79,7 @@ const Contact = () => {
           {/* Contact Form Section */}
           <div className="flex-1 bg-white rounded shadow p-6">
             <h2 className="text-red-500 text-lg font-semibold">Contact Us</h2>
-            
+
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
               <div className="flex flex-col">
                 <label className="text-black">Your Name <span className="text-red-500">*</span></label>
@@ -87,7 +98,7 @@ const Contact = () => {
 
               <div className="flex flex-col">
                 <label className="text-black">Your Message</label>
-                <textarea className="p-2 bg-neutral-100 rounded border-b-black border-b-[1px]" rows="5"></textarea>
+                <textarea className="p-2 bg-neutral-100 rounded border-b-black border-b-[1px]" value={message} onChange={(e) => setMessage(e.target.value)} rows="5"></textarea>
               </div>
 
               <div className="flex justify-end">

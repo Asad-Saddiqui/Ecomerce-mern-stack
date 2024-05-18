@@ -13,6 +13,7 @@ import BestSellingProducts from "../../Components/BestSellingProducts/BestSellin
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProducts } from '../../Api/Product/productSlice';
 import { getcategory } from "../../Api/category/categorySlice";
+import Slider from "../../Components/Slider/Slider";
 
 // import { getbrand } from '../../store/actions/authActions';
 // import { getcategory } from '../../store/actions/authActions';
@@ -22,41 +23,59 @@ const Home = () => {
   const { products, product, status, error } = useSelector(state => state.product);
   const { category } = useSelector(state => state.cat_);
   // const { brand } = useSelector(state => state.brand);
-  // const category = useSelector(state => state.category);
   useEffect(() => {
     dispatch(fetchProducts());
     // dispatch(getbrand());
     dispatch(getcategory());
   }, []);
   let data = products
-  // console.log({ products, product, status, error })
-  console.log({ hjjsdjf:products })
+
+
   function isToday(dateString) {
     const createdAtDate = new Date(dateString);
     const today = new Date();
+
+    console.log('createdAtDate:', createdAtDate);
+    console.log('today:', today);
 
     return (
       createdAtDate.getDate() === today.getDate() &&
       createdAtDate.getMonth() === today.getMonth() &&
       createdAtDate.getFullYear() === today.getFullYear()
-    ) ? 'yes' : 'no';
+    );
   }
-  let todayProduct = data ? data.length > 0 ? data.map((item) => isToday(item.createdAt) && item) : [] : "";
+
+  // Assuming 'data' is the array of products
+  let todayProduct = data
+    ? data.length > 0
+      ? data.filter(item => {
+        const isCreatedToday = isToday(item.createdAt);
+        console.log(`Product: ${item.title}, Created Today: ${isCreatedToday}`);
+        return isCreatedToday;
+      })
+      : []
+    : "";
+
+  let discountProduct = data ? data.length > 0 ? data.filter(product => product.discount > 0) : [] : "";
   console.log({ todayProduct })
   return (
     <div>
       <div>
         <Top />
         <Navbar />
-        <TopSec category={category} products={todayProduct} />
+        <TopSec category={category} products={discountProduct} />
       </div>
       <div>
         {data &&
-          <Products products={data} />
+          <Products offer={true} title="Today Products" products={todayProduct} />
         }
       </div>
       <Categories category={category} />
-      {data && <BestSellingProducts products={data} />}
+      <div className="w-full  my-10">
+        <Slider />
+
+      </div>
+      {data && <Products offer={false} title="All Products" products={data} />}
       <ImageComp />
       <ImagesSec />
       <Feature />

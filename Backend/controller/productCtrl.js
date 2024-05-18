@@ -18,6 +18,8 @@ const createProduct = asyncHandler(async (req, res) => {
   }
 });
 
+
+
 const updateProduct = asyncHandler(async (req, res) => {
   const { id } = req.params;
   validateMongoDbId(id);
@@ -33,8 +35,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     if (Array.isArray(updatedProductData.images) && updatedProductData.images.length === 0) {
       delete updatedProductData.images;
     }
-    console.log(updatedProductData);
-    console.log(updatedProductData);
+    console.log(updatedProductData)
     // Find the product by its ID and update it with the new data
     const updatedProduct = await Product.findOneAndUpdate({ _id: id }, updatedProductData, {
       new: true,
@@ -127,7 +128,7 @@ const getAllProduct = asyncHandler(async (req, res) => {
       }));
       product[i].color = color__
     }
-    res.json(product);
+    res.json(product)
   } catch (error) {
     throw new Error(error);
   }
@@ -150,7 +151,7 @@ const addToWishlist = asyncHandler(async (req, res) => {
           new: true,
         }
       );
-      res.json(user);
+      res.json({ user, msg: "Remove Product From Wishlist" });
     } else {
       let user = await User.findByIdAndUpdate(
         _id,
@@ -161,7 +162,7 @@ const addToWishlist = asyncHandler(async (req, res) => {
           new: true,
         }
       );
-      res.json(user);
+      res.json({ user, msg: "Add Product To Wishlist" });
     }
   } catch (error) {
     throw new Error(error);
@@ -170,7 +171,7 @@ const addToWishlist = asyncHandler(async (req, res) => {
 
 const rating = asyncHandler(async (req, res) => {
   const { _id } = req.user;
-  const { star, prodId, comment } = req.body;
+  const { star, prodId } = req.body;
   try {
     const product = await Product.findById(prodId);
     let alreadyRated = product.ratings.find(
@@ -182,7 +183,7 @@ const rating = asyncHandler(async (req, res) => {
           ratings: { $elemMatch: alreadyRated },
         },
         {
-          $set: { "ratings.$.star": star, "ratings.$.comment": comment },
+          $set: { "ratings.$.star": star},
         },
         {
           new: true,
@@ -195,7 +196,6 @@ const rating = asyncHandler(async (req, res) => {
           $push: {
             ratings: {
               star: star,
-              comment: comment,
               postedby: _id,
             },
           },

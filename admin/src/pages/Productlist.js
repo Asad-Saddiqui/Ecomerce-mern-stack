@@ -27,6 +27,26 @@ const columns = [
     sorter: (a, b) => a.category.length - b.category.length,
   },
   {
+    title: "Quantity",
+    dataIndex: "quantity",
+    sorter: (a, b) => a.category.length - b.category.length,
+  },
+  {
+    title: "Sold",
+    dataIndex: "sold",
+    sorter: (a, b) => a.category.length - b.category.length,
+  },
+  {
+    title: "Remaning",
+    dataIndex: "remaning",
+    sorter: (a, b) => a.category.length - b.category.length,
+  },
+  {
+    title: "Discount",
+    dataIndex: "discount",
+    sorter: (a, b) => a.category.length - b.category.length,
+  },
+  {
     title: "Price",
     dataIndex: "price",
     sorter: (a, b) => a.price - b.price,
@@ -54,6 +74,10 @@ const Productlist = () => {
       title: productState[i].title,
       brand: productState[i].brand,
       category: productState[i].category,
+      quantity: `${productState[i].quantity + productState[i].sold}`,
+      remaning: `${productState[i].sold}`,
+      discount: `${productState[i].discount}`,
+      sold: `${productState[i].quantity - productState[i].sold}`,
       price: `${productState[i].price}`,
       action: (
         <>

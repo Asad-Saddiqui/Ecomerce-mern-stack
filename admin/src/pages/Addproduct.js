@@ -79,6 +79,7 @@ const Addproduct = () => {
       title: "",
       description: "",
       price: "",
+      discount: "",
       brand: "",
       category: "",
       tags: "",
@@ -142,6 +143,17 @@ const Addproduct = () => {
           />
           <div className="error">
             {formik.touched.price && formik.errors.price}
+          </div>
+          <CustomInput
+            type="number"
+            label="Enter Product discount Price"
+            name="price"
+            onChng={formik.handleChange("discount")}
+            onBlr={formik.handleBlur("discount")}
+            val={formik.values.discount}
+          />
+          <div className="error">
+            {formik.touched.discount && formik.errors.discount}
           </div>
           <select
             name="brand"

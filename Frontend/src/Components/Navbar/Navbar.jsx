@@ -16,7 +16,7 @@ import { faHeart } from "@fortawesome/free-regular-svg-icons";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { _carts } from "../../Api/cart/cartSlice";
-import { profileGet } from "../../Api/profile/profileSlice";
+import { profileGet, resetState } from "../../Api/profile/profileSlice";
 const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -27,11 +27,18 @@ const Navbar = () => {
   const { status, error, profile: userwishlist } = useSelector(state => state.Profile);
 
   useEffect(() => {
-    dispatch(_carts())
-    dispatch(profileGet())
+    dispatch(_carts());
+    let auth = localStorage.getItem('auth');
+    if (auth) {
+      dispatch(profileGet()).then((data) => {
+        if (data.payload.status === 'fail') {
+          navigate("/403");
+        }
+      });
+    }
+    console.log({ status, error, profile: userwishlist })
   }, [])
   let token = localStorage.getItem('auth') ? JSON.parse(localStorage.getItem('auth')).token : null;
-  // console.log({ carts })
 
   const handleOpen = () => {
     setOpen(!open);
@@ -123,6 +130,7 @@ const Navbar = () => {
           </button>
           <button onClick={() => {
             localStorage.removeItem('auth');
+            dispatch(resetState());
             navigate('/')
           }}>
             Logout

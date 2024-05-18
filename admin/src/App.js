@@ -9,6 +9,7 @@ import Enquiries from "./pages/Enquiries";
 import Bloglist from "./pages/Bloglist";
 import Blogcatlist from "./pages/Blogcatlist";
 import Orders from "./pages/Orders";
+import NotFound from "./pages/NotFound";
 import Customers from "./pages/Customers";
 import Colorlist from "./pages/Colotlist";
 import Categorylist from "./pages/Categorylist";
@@ -38,6 +39,7 @@ function App() {
         <Route path="/" element={<Login />} />
         <Route path="/reset-password" element={<Resetpassword />} />
         <Route path="/forgot-password" element={<Forgotpassword />} />
+        <Route path="/404" element={<NotFound />} />
 
         <Route path="/admin" element={<MainLayout />}>
           <Route index element={<Dashboard />} />
