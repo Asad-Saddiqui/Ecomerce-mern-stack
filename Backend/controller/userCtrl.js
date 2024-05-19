@@ -9,18 +9,27 @@ const uniqid = require("uniqid");
 
 const asyncHandler = require("express-async-handler");
 const { generateToken } = require("../config/jwtToken");
+const { generateOtpToken } = require("../config/otpToken");
 const validateMongoDbId = require("../utils/validateMongodbId");
 const { generateRefreshToken } = require("../config/refreshtoken");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { EmailFuncationality } = require("./emailCtrl");
 // const sendEmail = require("./emailCtrl");
 
 // Create a User ----------------------------------------------
-
+function generateOTP() {
+  var characters = 'ABCDEFGHiJKLMNOPQRSTUVWXYZabcdefghijkLmnopqrstuvwxyz0123456789@$';
+  var otp = '';
+  for (var i = 0; i < 6; i++) {
+    otp += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return otp;
+}
 const createUser = asyncHandler(async (req, res) => {
-  //console.log("calling....")
   try {
+
     const { Email, Firstname, password } = req.body;
 
     const salt = await bcrypt.genSaltSync(10);
@@ -32,31 +41,461 @@ const createUser = asyncHandler(async (req, res) => {
       // Create a new user if not found
       const newUser = await User.create({ firstname: Firstname, email: Email, password: hash });
       //console.log(newUser)
+      var otp = generateOTP();
+
       const updateuser = await User.findByIdAndUpdate(
         newUser._id,
         {
-          refreshToken: generateToken(newUser?._id),
+          refreshToken: otp,
         },
         { new: true }
       );
-      // No need to call newUser.save() since User.create() already saves the document
-      newUser.password = null; // Clear password for security reasons
-      res.json({
-        _id: findUser?._id,
-        firstname: newUser?.firstname,
-        lastname: newUser?.lastname,
-        email: newUser?.email,
-        mobile: newUser?.mobile,
-        token: generateToken(newUser?._id),
-      });
+
+      let otpToken = generateOtpToken({ id: newUser._id, email: newUser.email });
+      var otpArray = otp.split('');
+      let emailsend = await EmailFuncationality(Email, "OTP Varification", `<!DOCTYPE html>
+      <html lang="en">
+
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>OTP Verification</title>
+          <style>
+              body {
+                  margin: 0;
+                  padding: 0;
+                  background-color: #f2f2f2;
+                  font-family: 'Roboto', Arial, sans-serif;
+              }
+
+              .container {
+                  max-width: 600px;
+                  margin: 40px auto;
+                  background-color: #ffffff;
+                  border-radius: 8px;
+                  overflow: hidden;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                  border:1px solid #004e92;
+              }
+
+              .header {
+                  background-color: #004e92;
+                  color: #ffffff;
+                  padding: 40px 20px;
+                  text-align: center;
+                  font-size: 24px;
+                  font-weight: bold;
+                  position: relative;
+              }
+
+              .header::after {
+                  content: '';
+                  display: block;
+                  width: 50px;
+                  height: 4px;
+                  background-color: #00aaff;
+                  margin: 10px auto 0;
+                  border-radius: 2px;
+              }
+
+              .content {
+                  padding: 40px 20px;
+                  text-align: center;
+              }
+
+              .otp-code {
+                  font-size: 36px;
+                  color: #004e92;
+                  margin: 20px 0;
+                  font-weight: bold;
+                  letter-spacing: 5px;
+              }
+
+              .otp-code span {
+                  position: relative;
+                  display: inline-block;
+              }
+
+              .color-line {
+                  position: absolute;
+                  bottom: 20px;
+                  left: 0;
+                  width: 100%;
+                  height: 4px;
+                  border-radius: 2px;
+              }
+
+              .color-line.red-line {
+                  background-color: #d90429;
+              }
+
+              .color-line.green-line {
+                  background-color: #3cba54;
+              }
+
+              .color-line.blue-line {
+                  background-color: #4285f4;
+              }
+
+              .message {
+                  font-size: 16px;
+                  color: #333333;
+                  margin: 20px 0;
+              }
+
+              .button {
+                  display: inline-block;
+                  padding: 15px 30px;
+                  margin: 20px 0;
+                  background-color: #00aaff;
+                  color: #ffffff;
+                  text-decoration: none;
+                  border-radius: 5px;
+                  font-size: 18px;
+                  font-weight: bold;
+                  transition: background-color 0.3s ease;
+              }
+
+              .button:hover {
+                  background-color: #008fcc;
+              }
+
+              .footer {
+                  background-color: #f7f7f7;
+                  padding: 20px;
+                  text-align: center;
+                  font-size: 14px;
+                  color: #777777;
+              }
+
+              .footer a {
+                  color: #004e92;
+                  text-decoration: none;
+              }
+
+              .footer a:hover {
+                  text-decoration: underline;
+              }
+
+              @media only screen and (max-width: 600px) {
+                  .content {
+                      padding: 20px;
+                  }
+
+                  .otp-code {
+                      font-size: 28px;
+                      letter-spacing: 3px;
+                  }
+
+                  .button {
+                      padding: 12px 24px;
+                      font-size: 16px;
+                  }
+              }
+
+              /* Unique style for H1 */
+              h1 {
+                  color: #004e92;
+                  font-size: 32px;
+                  margin-bottom: 20px;
+              }
+          </style>
+      </head>
+
+      <body>
+          <div class="container">
+              <div class="header">
+                  Ecommerce
+              </div>
+              <div class="content">
+                  <h1>OTP VERIFICATION</h1>
+                  <p class="message">Please use the code below to verify your email address. This code is valid for the next
+                      5 minutes.</p>
+                  <div class="otp-code">
+                      <span>${otpArray[0]}<span class="color-line red-line"></span></span>
+                      <span>${otpArray[1]}<span class="color-line green-line"></span></span>
+                      <span>${otpArray[2]}<span class="color-line blue-line"></span></span>
+                      <span>${otpArray[3]}<span class="color-line red-line"></span></span>
+                      <span>${otpArray[4]}<span class="color-line green-line"></span></span>
+                      <span>${otpArray[5]}<span class="color-line blue-line"></span></span>
+                  </div>
+                  <a href="http://localhost:3000/Otp" class="button">Verify Now</a>
+              </div>
+              <div class="footer">
+                  &copy; 2024 Your Company Name. All rights reserved.<br>
+                  1234 Street Name, City, Country | <a href="http://localhost:3000/">support@yourcompany.com</a><br>
+                  <a href="http://localhost:3000/">Privacy Policy</a> | <a href="http://localhost:3000/">Terms of Service</a>
+              </div>
+          </div>
+      </body>
+
+      </html>`);
+      if (emailsend) {
+        console.log({ updateuser })
+        res.json({
+          status: 200,
+          message: "Otp send Yout Email Please Check",
+          otpToekn: otpToken
+        });
+      }
     } else {
-      // Throw an error if the user already exists
       throw new Error("User Already Exists");
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
+const VarifyOtp = asyncHandler(async (req, res) => {
+  try {
+    const { refreshToken, _id, firstname, lastname, email, phone } = req.user;
+    const { otp } = req.body;
+    if (!otp.trim()) {
+      throw new Error("Please Enter 6 digits otp");
+    }
+    console.log(refreshToken, otp)
+    if (otp !== refreshToken) {
+      throw new Error("Invalid OTP");
+    }
+    const updateuser = await User.findByIdAndUpdate(
+      _id,
+      {
+        refreshToken: generateToken(_id),
+        isverfied: true
+      },
+      { new: true }
+    );
+    res.json({
+      status: 200,
+      _id: req.user?._id,
+      firstname: req.user?.firstname,
+      lastname: req.user?.lastname,
+      email: req.user?.email,
+      mobile: req.user?.mobile,
+      token: generateToken(req.user?._id),
+    });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+
+})
+
+const ResendOTP = asyncHandler(async (req, res) => {
+  const { email } = req.body;
+  if (email.trim()) {
+    const findUser = await User.findOne({ email: email });
+    console.log({ findUser })
+    if (!findUser) {
+      throw new Error("Invalid Email");
+    }
+    if (findUser && findUser.isverfied) {
+      res.json({
+        status: 201, msg: "Email Already Verified"
+      })
+    }
+    var otp = generateOTP();
+
+    const updateuser = await User.findByIdAndUpdate(
+      findUser._id,
+      {
+        refreshToken: otp,
+      },
+      { new: true }
+    );
+
+    let otpToken = generateOtpToken({ id: findUser._id, email: findUser.email });
+    var otpArray = otp.split('');
+    let emailsend = await EmailFuncationality(email, "OTP Varification", `<!DOCTYPE html>
+      <html lang="en">
+
+      <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>OTP Verification</title>
+          <style>
+              body {
+                  margin: 0;
+                  padding: 0;
+                  background-color: #f2f2f2;
+                  font-family: 'Roboto', Arial, sans-serif;
+              }
+
+              .container {
+                  max-width: 600px;
+                  margin: 40px auto;
+                  background-color: #ffffff;
+                  border-radius: 8px;
+                  overflow: hidden;
+                  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                  border:1px solid #004e92;
+              }
+
+              .header {
+                  background-color: #004e92;
+                  color: #ffffff;
+                  padding: 40px 20px;
+                  text-align: center;
+                  font-size: 24px;
+                  font-weight: bold;
+                  position: relative;
+              }
+
+              .header::after {
+                  content: '';
+                  display: block;
+                  width: 50px;
+                  height: 4px;
+                  background-color: #00aaff;
+                  margin: 10px auto 0;
+                  border-radius: 2px;
+              }
+
+              .content {
+                  padding: 40px 20px;
+                  text-align: center;
+              }
+
+              .otp-code {
+                  font-size: 36px;
+                  color: #004e92;
+                  margin: 20px 0;
+                  font-weight: bold;
+                  letter-spacing: 5px;
+              }
+
+              .otp-code span {
+                  position: relative;
+                  display: inline-block;
+              }
+
+              .color-line {
+                  position: absolute;
+                  bottom: 20px;
+                  left: 0;
+                  width: 100%;
+                  height: 4px;
+                  border-radius: 2px;
+              }
+
+              .color-line.red-line {
+                  background-color: #d90429;
+              }
+
+              .color-line.green-line {
+                  background-color: #3cba54;
+              }
+
+              .color-line.blue-line {
+                  background-color: #4285f4;
+              }
+
+              .message {
+                  font-size: 16px;
+                  color: #333333;
+                  margin: 20px 0;
+              }
+
+              .button {
+                  display: inline-block;
+                  padding: 15px 30px;
+                  margin: 20px 0;
+                  background-color: #00aaff;
+                  color: #ffffff;
+                  text-decoration: none;
+                  border-radius: 5px;
+                  font-size: 18px;
+                  font-weight: bold;
+                  transition: background-color 0.3s ease;
+              }
+
+              .button:hover {
+                  background-color: #008fcc;
+              }
+
+              .footer {
+                  background-color: #f7f7f7;
+                  padding: 20px;
+                  text-align: center;
+                  font-size: 14px;
+                  color: #777777;
+              }
+
+              .footer a {
+                  color: #004e92;
+                  text-decoration: none;
+              }
+
+              .footer a:hover {
+                  text-decoration: underline;
+              }
+
+              @media only screen and (max-width: 600px) {
+                  .content {
+                      padding: 20px;
+                  }
+
+                  .otp-code {
+                      font-size: 28px;
+                      letter-spacing: 3px;
+                  }
+
+                  .button {
+                      padding: 12px 24px;
+                      font-size: 16px;
+                  }
+              }
+
+              /* Unique style for H1 */
+              h1 {
+                  color: #004e92;
+                  font-size: 32px;
+                  margin-bottom: 20px;
+              }
+          </style>
+      </head>
+
+      <body>
+          <div class="container">
+              <div class="header">
+                  Ecommerce
+              </div>
+              <div class="content">
+                  <h1>OTP VERIFICATION</h1>
+                  <p class="message">Please use the code below to verify your email address. This code is valid for the next
+                      5 minutes.</p>
+                  <div class="otp-code">
+                      <span>${otpArray[0]}<span class="color-line red-line"></span></span>
+                      <span>${otpArray[1]}<span class="color-line green-line"></span></span>
+                      <span>${otpArray[2]}<span class="color-line blue-line"></span></span>
+                      <span>${otpArray[3]}<span class="color-line red-line"></span></span>
+                      <span>${otpArray[4]}<span class="color-line green-line"></span></span>
+                      <span>${otpArray[5]}<span class="color-line blue-line"></span></span>
+                  </div>
+                  <a href="http://localhost:3000/Otp" class="button">Verify Now</a>
+              </div>
+              <div class="footer">
+                  &copy; 2024 Your Company Name. All rights reserved.<br>
+                  1234 Street Name, City, Country | <a href="http://localhost:3000/">support@yourcompany.com</a><br>
+                  <a href="http://localhost:3000/">Privacy Policy</a> | <a href="http://localhost:3000/">Terms of Service</a>
+              </div>
+          </div>
+      </body>
+
+      </html>`);
+    if (emailsend) {
+      res.json({
+        status: 200,
+        message: "Otp Send Your Email Please Check",
+        otpToekn: otpToken
+      });
+    }
+  } else {
+    throw new Error("Please Enter Email");
+
+  }
+})
+
+
 
 const message_ = async (req, res) => {
   try {
@@ -81,7 +520,7 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
     const email = req.body.Email;
     const password = req.body.password;
     // check if user exists or not
-    const findUser = await User.findOne({ email });
+    const findUser = await User.findOne({ email, isverfied: true });
     if (findUser && (await bcrypt.compare(password, findUser.password))) {
       const updateuser = await User.findByIdAndUpdate(
         findUser.id,
@@ -792,5 +1231,7 @@ module.exports = {
   getOrderByUserId,
   profile,
   deleteOrder,
-  message_
+  message_,
+  VarifyOtp,
+  ResendOTP
 };

@@ -22,6 +22,7 @@ import ShoesCateg from "./Pages/ShoesCateg/ShoesCateg"
 import Order from "./Pages/Order/Order";
 import OrderDetails from "./Pages/Order/OrderDetails";
 import Unauthorized from "./Pages/Unauthorized";
+import Otp from "./Pages/Otp";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/Otp" element={<Otp />} />
           <Route path="/login" element={<Login />} />
           <Route path="/billing" element={<Billing />} />
           <Route path="/profile" element={<Profile />} />

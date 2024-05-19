@@ -38,6 +38,10 @@ var userSchema = new mongoose.Schema(
     address: {
       type: String,
     },
+    isverfied: {
+      type: Boolean,
+      default: false,
+    },
     wishlist: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
     refreshToken: {
       type: String,

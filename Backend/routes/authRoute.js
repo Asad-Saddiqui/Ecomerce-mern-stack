@@ -27,11 +27,15 @@ const {
   getAllOrders,
   profile, updateCart, getOrderByUserId,
   deleteOrder,
-  message_
+  message_,
+  VarifyOtp,
+  ResendOTP
 } = require("../controller/userCtrl");
 const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
 const router = express.Router();
 router.post("/register", createUser);
+router.post("/resend/otp", ResendOTP);
+router.post("/verify", authMiddleware, VarifyOtp);
 router.post("/forgot-password-token", forgotPasswordToken);
 
 router.put("/reset-password/:token", resetPassword);

@@ -36,13 +36,14 @@ const Signup = () => {
         if (user.error) {
             toast.error(user.payload);
         }
-        if (!user.error) {
-            localStorage.setItem('auth', JSON.stringify(user.payload))
-            navigate('/');
+        if (!user.error && user.payload.status === 200) {
+            console.log({ user })
+            localStorage.setItem('otpToken', user.payload.otpToekn);
+            navigate('/otp');
             setFirstname("")
             setEmail("")
             setPassword("")
-            toast.success("Registration Successfully");
+            toast.success(user.payload.message);
         }
 
 
