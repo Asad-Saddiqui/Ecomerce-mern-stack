@@ -6,12 +6,14 @@ import Navbar from '../../Components/Navbar/Navbar';
 import "./login.css";
 import image from '../../assets/1.png'
 import { useDispatch, useSelector } from 'react-redux';
-
+import { message } from 'antd'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { signupUser } from '../../Api/auth/authSlice';
 const Signup = () => {
+    const [messageApi, contextHolder] = message.useMessage();
+
     const [Firstname, setFirstname] = useState('');
     const [Email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -33,11 +35,12 @@ const Signup = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         let user = await dispatch(signupUser({ Firstname, Email, password }));
-        if (user.error) {
+        if (user.error || !user.payload.status) {
+            console.log(user.payload)
+            // message.success(user.payload);
             toast.error(user.payload);
         }
         if (!user.error && user.payload.status === 200) {
-            console.log({ user })
             localStorage.setItem('otpToken', user.payload.otpToekn);
             navigate('/otp');
             setFirstname("")

@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, createAction } from "@reduxjs/toolkit";
 import profile_ from "./profileServices";
 
 
@@ -9,6 +9,8 @@ const initialState = {
     isSuccess: false,
     message: "",
 };
+
+export const resetStateProfile = createAction("Reset_all");
 
 export const profile__ = createAsyncThunk(
     "profile",
@@ -68,7 +70,9 @@ export const profileSlice = createSlice({
                 state.isSuccess = false;
                 state.message = action.error.message;
                 state.isLoading = false;
-            });
+            })
+            .addCase(resetStateProfile, () => initialState);
+
 
     },
 });

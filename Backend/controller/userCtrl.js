@@ -8,11 +8,11 @@ const Color = require("../models/colorModel");
 const uniqid = require("uniqid");
 
 const asyncHandler = require("express-async-handler");
+const validateMongoDbId = require("../utils/validateMongodbId");
+const crypto = require("crypto");
 const { generateToken } = require("../config/jwtToken");
 const { generateOtpToken } = require("../config/otpToken");
-const validateMongoDbId = require("../utils/validateMongodbId");
 const { generateRefreshToken } = require("../config/refreshtoken");
-const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const { EmailFuncationality } = require("./emailCtrl");

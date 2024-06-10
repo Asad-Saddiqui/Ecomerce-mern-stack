@@ -19,13 +19,13 @@ import { BiCategoryAlt } from "react-icons/bi";
 import { Layout, Menu, theme } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { profile__ } from "../features/profile/profileSlice";
+import { profile__, resetStateProfile } from "../features/profile/profileSlice";
 const { Header, Sider, Content } = Layout;
 const MainLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const user_ = localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null;
   const dispatch = useDispatch();
-  const { user, isError, isLoading, isSuccess, message } = useSelector(state => state.profile);
+  const { user, isError, isLoading, isSuccess } = useSelector(state => state.profile);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -36,12 +36,12 @@ const MainLayout = () => {
 
     if (!token) {
       navigate("/");
-    }
-    ;
+    };
     if (user_) {
       dispatch(profile__()).then((data) => {
         console.log({ admindata: data })
-        if (data.status === "fail") {
+        if (data.payload.status === "fail") {
+          dispatch(resetStateProfile())
           navigate("/404");
         }
       });
@@ -61,8 +61,8 @@ const MainLayout = () => {
       <Sider trigger={null} collapsible collapsed={collapsed}>
         <div className="logo">
           <h2 className="text-white fs-5 text-center py-3 mb-0">
-            <span className="sm-logo">{isSuccess && (user && user.getaUser.firstname)}</span>
-            <span className="lg-logo">{isSuccess && (user && (user.getaUser.firstname + " " + user.getaUser.lastname))}</span>
+            <span className="sm-logo">{isSuccess && (user && user.getaUser && user.getaUser.firstname)}</span>
+            <span className="lg-logo">{isSuccess && (user && user.getaUser &&  (user.getaUser.firstname + " " + user.getaUser.lastname))}</span>
           </h2>
         </div>
         <Menu

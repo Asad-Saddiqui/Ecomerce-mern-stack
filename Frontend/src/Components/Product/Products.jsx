@@ -7,11 +7,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from "react-toastify";
 import { _addtocart, _carts } from "../../Api/cart/cartSlice";
 import { addProductToWishlist } from "../../Api/wishlist/wishlistSlice";
-import { Button, Modal } from 'antd';
+import { Button, Modal,message } from 'antd';
 import Rating from '@mui/material/Rating';
 import { fetchProducts } from "../../Api/Product/productSlice";
 
 const Products = ({ offer, title, products }) => {
+  const [messageApi, contextHolder] = message.useMessage();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [value, setValue] = useState(2);
   const [prodId, setProdId] = useState("");
@@ -38,14 +39,23 @@ const Products = ({ offer, title, products }) => {
         response = await response.json();
         dispatch(fetchProducts());
 
-        // console.log({ Rating: response })
-        // if (response.success) {
-        //   toast.success("Rating submitted successfully");
-        // } else {
-        //   toast.error(response.message);
-        // }
+        console.log({ Rating: response })
+        if (response.success) {
+          messageApi.open({
+            type: 'success',
+            content: 'Rating submitted successfully',
+          });
+        } else {
+          messageApi.open({
+            type: 'error',
+            content: response.message,
+          });
+        }
       } catch (error) {
-        toast.error("An error occurred while submitting the rating");
+        messageApi.open({
+          type: 'error',
+          content: 'An error occurred while submitting the rating',
+        });
       }
     }
     setIsModalOpen(false);
@@ -68,7 +78,10 @@ const Products = ({ offer, title, products }) => {
     if (token) {
       let cart = await dispatch(_addtocart(cartData));
       if (cart.type === 'addtocart/fulfilled') {
-        toast.success("Added Successfully");
+        messageApi.open({
+          type: 'success',
+          content: 'Cart Added Successfully',
+        });
         dispatch(_carts());
       } else {
         toast.error(cart.payload);
